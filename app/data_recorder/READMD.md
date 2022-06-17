@@ -13,8 +13,8 @@ class ConfigCTPFutureTDApi:
 ```
 
 在coder-server内启动程序
-![](images/fig1.png)
+![](https://github.com/dybeta2021/MyOTP/blob/main/app/data_recorder/images/fig1.png)
 
 ，正常运行的状态，tick数据写入clickhouse的buffer-table，数据库自行管理buffer异步落地。
 
-![](images/fig2.png)
+![](https://github.com/dybeta2021/MyOTP/blob/main/app/data_recorder/images/fig2.png)
