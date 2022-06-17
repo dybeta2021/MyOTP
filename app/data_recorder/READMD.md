@@ -13,8 +13,8 @@ class ConfigCTPFutureTDApi:
 ```
 
 在coder-server内启动程序
-![](/app/data_recorder/images/fig1.png)
+![](./images/fig1.png)
 
 ，正常运行的状态，tick数据写入clickhouse的buffer-table，数据库自行管理buffer异步落地。
 
-![](/app/data_recorder/images/fig2.png)
+![](./images/fig2.png)
