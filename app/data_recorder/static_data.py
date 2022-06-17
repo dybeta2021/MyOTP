@@ -12,9 +12,7 @@ from core.api.static_data.ctp_future.app_ctp_future_static_data import get_stati
 from dateutil.parser import parse
 from pandas import DataFrame
 
-from config.clickhouse import DockerClickhouseConfig
-# from config.ctp import SimNowCTPFutureConfig as CTPFutureConfig
-from config.ctp import CTPFutureTraderConfig
+from config.config import ConfigCTPFutureTDApi
 from core.app.static_data.reformat import reformat_data
 from core.app.static_data.to_db import to_ck
 
@@ -25,12 +23,12 @@ def update_static_data(host: str = "single-clickhouse-server"):
     :param host:
     :return:
     """
-    data = get_static_data(ip=CTPFutureTraderConfig.ip,
-                           broker_id=CTPFutureTraderConfig.broker_id,
-                           user_id=CTPFutureTraderConfig.user_id,
-                           password=CTPFutureTraderConfig.password,
-                           app_id=CTPFutureTraderConfig.app_id,
-                           auth_code=CTPFutureTraderConfig.auth_code)
+    data = get_static_data(ip=ConfigCTPFutureTDApi.ip,
+                           broker_id=ConfigCTPFutureTDApi.broker_id,
+                           user_id=ConfigCTPFutureTDApi.user_id,
+                           password=ConfigCTPFutureTDApi.password,
+                           app_id=ConfigCTPFutureTDApi.app_id,
+                           auth_code=ConfigCTPFutureTDApi.auth_code)
 
     data = DataFrame(data).T.reset_index(drop=True)
     data = reformat_data(data)
@@ -45,6 +43,6 @@ def update_static_data(host: str = "single-clickhouse-server"):
     data.to_csv(path_or_buf=path, encoding="utf-8")
     return data
 
-
-if __name__ == "__main__":
-    update_static_data(host=DockerClickhouseConfig.host)
+#
+# if __name__ == "__main__":
+#     update_static_data(host=ConfigClickhouse.host)

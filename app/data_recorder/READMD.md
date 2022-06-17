@@ -1,0 +1,13 @@
+## Data-Recorder 行情收录系统
+
+启动方式配置config目录下账户密码，使用`python task.py`启动程序。
+```
+# SimNow ctp-future交易接口设置
+class ConfigCTPFutureTDApi:
+    ip = r"tcp://180.168.146.187:10202"
+    broker_id = r"9999"
+    user_id = r""
+    password = r""
+    app_id = r"simnow_client_test"
+    auth_code = r"0000000000000000"
+```

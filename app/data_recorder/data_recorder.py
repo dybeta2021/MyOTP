@@ -113,10 +113,14 @@ def get_table_name():
 def run_data_recorder(universe: list, ip: str, host: str = "single-clickhouse-server", log_level: str = "info"):
     """
 
+    :param universe:
+    :param ip:
     :param host:
+    :param log_level:
     :return:
     """
     table_name = get_table_name()
     create_table(table_name, host)
     create_buffer(table_name, host)
-    _run_data_recorder(front_address=ip, universe=universe, log_file_name= "clogs/data_recorder.log", level=log_level, table_name = "tick_data.buffer_tick_data")
+    _run_data_recorder(front_address=ip, universe=universe, log_file_name="clogs/data_recorder.log", level=log_level,
+                       table_name="tick_data.buffer_tick_data")

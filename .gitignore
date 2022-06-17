@@ -1,2 +1,7 @@
 ﻿tools/datetime/deps
 *.pyc
+*.csv
+*.log
+*.DS_Store
+*.con
+app/data_recorder/config/config.py
