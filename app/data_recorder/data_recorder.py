@@ -100,7 +100,6 @@ def get_table_name():
     创建tick_data表名称
     :return:
     """
-    now = datetime.now()
     date = datetime.now().strftime("%Y%m%d")
     if parse("{} 06:00:00".format(date)) <= datetime.now() <= parse("{} 18:00:00".format(date)):
         file_name = "tick_am_{}".format(date)
