@@ -12,7 +12,7 @@ from core.api.static_data.ctp_future.app_ctp_future_static_data import get_stati
 from dateutil.parser import parse
 from pandas import DataFrame
 
-from config.config import ConfigCTPFutureTDApi
+from config import ConfigCTPFutureTDApi
 from core.app.static_data.reformat import reformat_data
 from core.app.static_data.to_db import to_ck
 

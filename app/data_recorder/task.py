@@ -4,7 +4,7 @@
 # @File     : task.py 
 # @Author   : 稻草人
 # @Time     : 2022/6/16 22:26
-from config.config import ConfigClickhouse, ConfigCTPFutureMDApi
+from config import ConfigClickhouse, ConfigCTPFutureMDApi
 
 from data_recorder import run_data_recorder
 from static_data import update_static_data

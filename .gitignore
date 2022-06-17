@@ -5,3 +5,5 @@
 *.DS_Store
 *.con
 app/data_recorder/config/config.py
+.idea
+app/data_recorder/config
