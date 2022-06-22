@@ -1,9 +1,9 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
 
-#ifndef DISRUPTOR_IPC_RINGBUFFER_H
-#define DISRUPTOR_IPC_RINGBUFFER_H
+#ifndef DISRUPTOR_IPC_RING_H
+#define DISRUPTOR_IPC_RING_H
 
 #include "spdlog/spdlog.h"
 #include <iostream>
@@ -11,7 +11,6 @@
 #include <vector>
 
 namespace disruptor {
-#define RING_DEFAULT_BUFFER_SIZE 8192
     template<typename T>
     class RingBuffer {
     private:
@@ -19,10 +18,8 @@ namespace disruptor {
         std::vector<T> buffer_;
 
     public:
-        RingBuffer() {
-            capacity_ = RING_DEFAULT_BUFFER_SIZE;
-            buffer_.reserve(RING_DEFAULT_BUFFER_SIZE);
-        }
+        RingBuffer() = default;
+        ~RingBuffer() = default;
 
         explicit RingBuffer(const std::vector<T> &buffer) : buffer_(buffer) {}
 
@@ -51,13 +48,7 @@ namespace disruptor {
             capacity_ = capacity;
             return true;
         }
-
-        //private:
-        //    RingBuffer(const RingBuffer &);
-        //    void operator=(const RingBuffer &);
-        //    RingBuffer(RingBuffer &&);
-        //    void operator=(const RingBuffer &&);
     };
 }// namespace disruptor
 
-#endif//DISRUPTOR_IPC_RINGBUFFER_H
+#endif//DISRUPTOR_IPC_RING_H

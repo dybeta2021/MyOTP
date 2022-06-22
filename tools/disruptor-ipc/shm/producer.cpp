@@ -1,8 +1,8 @@
-#include "logger.h"
+#include "disruptor/ipc.h"
 #include "disruptor/ringbuffer.h"
-#include "disruptor/shm_manager.h"
-#include "disruptor/shm_ringbuffer.h"
+#include "disruptor/shm.h"
 #include "disruptor/wait_strategy.h"
+#include "logger.h"
 #include <iostream>
 
 void test_shm() {
@@ -50,7 +50,7 @@ void test_ring() {
 }
 
 void test_shm_ring(){
-    auto shm_ring = disruptor::SharedMemoryRingBuffer<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
+    auto shm_ring = disruptor::RingIPC<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
     shm_ring.InitRingBuffer(10086, 8192);
 //    shm_ring.print();
 
@@ -62,7 +62,7 @@ void test_shm_ring(){
 }
 
 void test_producer(){
-    auto shm_ring = disruptor::SharedMemoryRingBuffer<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
+    auto shm_ring = disruptor::RingIPC<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
     constexpr int shm_size = 8192;
     shm_ring.InitRingBuffer(10086,  shm_size);
     for (int i=0; i<8192*1024; i++){

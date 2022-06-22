@@ -1,9 +1,9 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
 
-#ifndef DISRUPTOR_IPC_SHM_MANAGER_H
-#define DISRUPTOR_IPC_SHM_MANAGER_H
+#ifndef DISRUPTOR_IPC_SHM_H
+#define DISRUPTOR_IPC_SHM_H
 
 #include "spdlog/spdlog.h"
 #include <cerrno>
@@ -167,4 +167,4 @@ namespace disruptor::shm {
 }// namespace disruptor::shm
 
 
-#endif//DISRUPTOR_IPC_SHM_MANAGER_H
+#endif//DISRUPTOR_IPC_SHM_H

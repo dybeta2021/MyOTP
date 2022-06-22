@@ -1,5 +1,5 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
 // 等待读取数据的工具类，主要负责等待可读取游标是否到达要读取的位置，可中断等待。
 // BusySpinStrategy：不放弃cpu死循环等待
@@ -9,7 +9,7 @@
 
 #ifndef DISRUPTOR_IPC_WAIT_STRATEGY_H
 #define DISRUPTOR_IPC_WAIT_STRATEGY_H
-#include "shm_manager.h"
+#include "shm.h"
 #include <atomic>
 #include <condition_variable>
 #include <fcntl.h>
@@ -38,13 +38,13 @@ namespace disruptor::wait {
         virtual int64_t Wait(int64_t nIndex) = 0;
         virtual void NotifyAllWhenBlocking() = 0;//blocking strategy only
     protected:
-        RingBufferStatusOnSharedMemory *status_{};
+        ShmStoreHeader *shm_hdr{};
     };
 
     class YieldingWaitStrategy : public WaitStrategy {
     public:
-        explicit YieldingWaitStrategy(RingBufferStatusOnSharedMemory *ptr) {
-            status_ = ptr;
+        explicit YieldingWaitStrategy(ShmStoreHeader *ptr) {
+            shm_hdr = ptr;
         };
         ~YieldingWaitStrategy() override = default;
         ;
@@ -52,7 +52,7 @@ namespace disruptor::wait {
         int64_t Wait(int64_t nIndex) override {
             int nCounter = 100;
             while (true) {
-                int64_t nCurrentCursor = status_->cursor.load();
+                int64_t nCurrentCursor = shm_hdr->cursor.load();
                 if (nIndex > nCurrentCursor) {
                     //spins --> yield
                     if (nCounter == 0) {
@@ -72,8 +72,8 @@ namespace disruptor::wait {
 
     class SleepingWaitStrategy : public WaitStrategy {
     public:
-        explicit SleepingWaitStrategy(RingBufferStatusOnSharedMemory *ptr) {
-            status_ = ptr;
+        explicit SleepingWaitStrategy(ShmStoreHeader *ptr) {
+            shm_hdr = ptr;
         };
         ~SleepingWaitStrategy() override = default;
         ;
@@ -82,7 +82,7 @@ namespace disruptor::wait {
             int nCounter = 200;
 
             while (true) {
-                int64_t nCurrentCursor = status_->cursor.load();
+                int64_t nCurrentCursor = shm_hdr->cursor.load();
                 if (nIndex > nCurrentCursor) {
                     //spins --> yield --> sleep
                     if (nCounter > 100) {
@@ -105,15 +105,15 @@ namespace disruptor::wait {
 
     class BlockingWaitStrategy : public WaitStrategy {
     public:
-        explicit BlockingWaitStrategy(RingBufferStatusOnSharedMemory *ptr) {
-            status_ = ptr;
+        explicit BlockingWaitStrategy(ShmStoreHeader *ptr) {
+            shm_hdr = ptr;
         };
         ~BlockingWaitStrategy() override = default;
         ;
 
         int64_t Wait(int64_t nIndex) override {
             while (true) {
-                int64_t nCurrentCursor = status_->cursor.load();
+                int64_t nCurrentCursor = shm_hdr->cursor.load();
                 if (nIndex > nCurrentCursor) {
                     struct timespec timeToWait {};
                     struct timeval now {};
@@ -122,21 +122,21 @@ namespace disruptor::wait {
                     timeToWait.tv_nsec = now.tv_usec * 1000;
                     timeToWait.tv_sec += 1;
                     //timeToWait.tv_nsec += 100;
-                    pthread_mutex_lock(&(status_->mtx_lock));
+                    pthread_mutex_lock(&(shm_hdr->mtx_lock));
 
-                    pthread_cond_timedwait(&(status_->cond_var),
-                                           &(status_->mtx_lock),
+                    pthread_cond_timedwait(&(shm_hdr->cond_var),
+                                           &(shm_hdr->mtx_lock),
                                            &timeToWait);
-                    pthread_mutex_unlock(&(status_->mtx_lock));
+                    pthread_mutex_unlock(&(shm_hdr->mtx_lock));
                 } else {
                     return nCurrentCursor;
                 }
             }//while
         }
         void NotifyAllWhenBlocking() override {//blocking strategy only
-            pthread_mutex_lock(&(status_->mtx_lock));
-            pthread_cond_broadcast(&(status_->cond_var));
-            pthread_mutex_unlock(&(status_->mtx_lock));
+            pthread_mutex_lock(&(shm_hdr->mtx_lock));
+            pthread_cond_broadcast(&(shm_hdr->cond_var));
+            pthread_mutex_unlock(&(shm_hdr->mtx_lock));
         }
     };
 

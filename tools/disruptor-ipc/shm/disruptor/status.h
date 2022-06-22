@@ -1,5 +1,5 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
 
 #ifndef DISRUPTOR_IPC_STATUS_H
@@ -20,7 +20,6 @@ namespace disruptor {
     {
         size_t buffer_size;
         size_t total_mem_size;
-        std::atomic<size_t> registered_producer_count;
         std::atomic<size_t> registered_consumer_count;
         std::atomic<int64_t> cursor alignas(CHANNEL_LINE_SIZE);
         std::atomic<int64_t> next alignas(CHANNEL_LINE_SIZE);

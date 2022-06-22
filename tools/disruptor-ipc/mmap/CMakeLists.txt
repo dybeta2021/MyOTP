@@ -10,11 +10,11 @@ set(CMAKE_CXX_STANDARD 23)
 
 find_package(spdlog)
 
+add_executable(test main.cpp)
+target_link_libraries(test fmt::fmt)
+
 add_executable(producer producer.cpp)
 target_link_libraries(producer fmt::fmt)
 
 add_executable(consumer consumer.cpp)
 target_link_libraries(consumer fmt::fmt)
-
-add_executable(remove_shm remove_shm.cpp)
-target_link_libraries(remove_shm fmt::fmt)

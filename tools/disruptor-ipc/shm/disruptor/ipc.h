@@ -1,9 +1,9 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
 
-#ifndef DISRUPTOR_IPC_SHM_RINGBUFFER_H
-#define DISRUPTOR_IPC_SHM_RINGBUFFER_H
+#ifndef DISRUPTOR_IPC_IPC_H
+#define DISRUPTOR_IPC_IPC_H
 #include "status.h"
 #include <atomic>
 #include <cinttypes>
@@ -12,12 +12,12 @@
 #include <vector>
 
 #include "ringbuffer.h"
-#include "shm_manager.h"
+#include "shm.h"
 #include "wait_strategy.h"
 
 namespace disruptor {
     template<typename T>
-    class SharedMemoryRingBuffer {
+    class RingIPC {
     private:
         size_t buffer_size_{};
         size_t total_mem_size_{};
@@ -29,8 +29,8 @@ namespace disruptor {
         int item_size;
 
     public:
-        explicit SharedMemoryRingBuffer(wait::ENUM_WAIT_STRATEGY wait_strategy);
-        ~SharedMemoryRingBuffer();
+        explicit RingIPC(wait::ENUM_WAIT_STRATEGY wait_strategy);
+        ~RingIPC();
 
         bool InitRingBuffer(const key_t &shm_key, int size);
         void ResetRingBufferState();
@@ -81,7 +81,7 @@ namespace disruptor {
     };
 
     template<typename T>
-    inline SharedMemoryRingBuffer<T>::SharedMemoryRingBuffer(wait::ENUM_WAIT_STRATEGY wait_strategy) {
+    inline RingIPC<T>::RingIPC(wait::ENUM_WAIT_STRATEGY wait_strategy) {
         status_ = nullptr;
         wait_strategy_type_ = wait_strategy;
         wait_strategy_ = nullptr;
@@ -89,7 +89,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline SharedMemoryRingBuffer<T>::~SharedMemoryRingBuffer() {
+    inline RingIPC<T>::~RingIPC() {
         if (wait_strategy_) {
             delete wait_strategy_;
             wait_strategy_ = nullptr;
@@ -97,7 +97,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline bool SharedMemoryRingBuffer<T>::InitRingBuffer(const key_t &shm_key, int size) {
+    inline bool RingIPC<T>::InitRingBuffer(const key_t &shm_key, int size) {
         if (size <= 0) {
             SPDLOG_ERROR("Invalid size : {}", size);
             return false;
@@ -153,7 +153,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline void SharedMemoryRingBuffer<T>::ResetRingBufferState() {
+    inline void RingIPC<T>::ResetRingBufferState() {
         if (status_ == nullptr) {
             SPDLOG_ERROR("call InitRingBuffer first !");
             return;
@@ -180,7 +180,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline bool SharedMemoryRingBuffer<T>::TerminateRingBuffer() {
+    inline bool RingIPC<T>::TerminateRingBuffer() {
         if (!shm_manager_.DetachShm()) {
             SPDLOG_ERROR("Error");
             return false;
@@ -193,24 +193,24 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline bool SharedMemoryRingBuffer<T>::SetData(const int64_t &index, T *data) {
+    inline bool RingIPC<T>::SetData(const int64_t &index, T *data) {
         memcpy(ring_buffer_[index], data, item_size);
         return true;
     }
 
     template<typename T>
-    inline T *SharedMemoryRingBuffer<T>::GetData(const int64_t &index) {
+    inline T *RingIPC<T>::GetData(const int64_t &index) {
         return ring_buffer_[index];
     }
 
     template<typename T>
-    inline void SharedMemoryRingBuffer<T>::NotifyAll() {
+    inline void RingIPC<T>::NotifyAll() {
         wait_strategy_->NotifyAllWhenBlocking();//blocking wait strategy only.
     }
 
     // 一个进程写入，单进程内多线程因为原子操作无需区分写入线程
     template<typename T>
-    inline int64_t SharedMemoryRingBuffer<T>::ClaimIndex() {
+    inline int64_t RingIPC<T>::ClaimIndex() {
         int64_t nNextSeqForClaim = GetNextSequenceForClaim();
         int64_t wrapPoint = nNextSeqForClaim - buffer_size_;
         do {
@@ -226,7 +226,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline int64_t SharedMemoryRingBuffer<T>::GetMinIndexOfConsumers() {
+    inline int64_t RingIPC<T>::GetMinIndexOfConsumers() {
         int64_t min_index = INT64_MAX;
         bool is_found = false;
         for (size_t i = 0; i < status_->registered_consumer_count; i++) {
@@ -243,7 +243,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline bool SharedMemoryRingBuffer<T>::Commit(const int64_t &index) {
+    inline bool RingIPC<T>::Commit(const int64_t &index) {
         const int64_t expected = index - 1;
         while (true) {
             if (status_->cursor == expected) {
@@ -262,7 +262,7 @@ namespace disruptor {
     /// \param index_of_customer ==-1，from first
     /// \return
     template<typename T>
-    inline bool SharedMemoryRingBuffer<T>::RegisterConsumer(const int &id, int64_t &index_of_customer) {
+    inline bool RingIPC<T>::RegisterConsumer(const int &id, int64_t &index_of_customer) {
         if (id >= MAX_CONSUMER) {
             SPDLOG_ERROR("Customer more than {}", MAX_CONSUMER);
             return false;
@@ -299,7 +299,7 @@ namespace disruptor {
     }
 
     template<typename T>
-    inline int64_t SharedMemoryRingBuffer<T>::WaitFor(const int64_t &index) {
+    inline int64_t RingIPC<T>::WaitFor(const int64_t &index) {
         int64_t nCurrentCursor = status_->cursor.load();
         if (index > nCurrentCursor) {
             return wait_strategy_->Wait(index);
@@ -310,4 +310,4 @@ namespace disruptor {
 
 }// namespace disruptor
 
-#endif//DISRUPTOR_IPC_SHM_RINGBUFFER_H
+#endif//DISRUPTOR_IPC_IPC_H

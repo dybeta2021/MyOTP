@@ -1,10 +1,10 @@
 //
-// Created by 稻草人 on 2022/6/19.
+// Created by 杨东 on 2022/6/19.
 //
-#include "logger.h"
-#include "disruptor/shm_manager.h"
-#include "disruptor/shm_ringbuffer.h"
+#include "disruptor/ipc.h"
+#include "disruptor/shm.h"
 #include "disruptor/wait_strategy.h"
+#include "logger.h"
 #include <iostream>
 
 typedef struct {
@@ -16,7 +16,7 @@ typedef struct {
 int main() {
     create_logger("clogs/shm.log", "trace", false, false, false, 1, 1);
 
-    auto shm_ring = disruptor::SharedMemoryRingBuffer<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
+    auto shm_ring = disruptor::RingIPC<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
     constexpr int shm_size = 8192;
     shm_ring.InitRingBuffer(10086,  shm_size);
 
