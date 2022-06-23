@@ -17,7 +17,7 @@ typedef struct {
 int main() {
     create_logger("clogs/consumer.log", "trace", false, false, false, 1, 1);
     auto shm = disruptor::Disruptor<TestBufferData>(disruptor::wait::BLOCKING_WAIT);
-    shm.Init("test.store", 1024*1024);
+    shm.Init("test.store", 1024*1024*16);
 
     // 获取当前最新的数据
     const int user_id = 0;
