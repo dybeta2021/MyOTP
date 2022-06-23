@@ -1,5 +1,5 @@
 //
-// Created by 杨东 on 2022/6/19.
+// Created by 稻草人 on 2022/6/19.
 //
 
 #ifndef DISRUPTOR_IPC_SHM_H
