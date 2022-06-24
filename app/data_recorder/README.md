@@ -11,10 +11,3 @@ class ConfigCTPFutureTDApi:
     app_id = r"simnow_client_test"
     auth_code = r"0000000000000000"
 ```
-
-在coder-server内启动程序
-![](/images/fig1.png)
-
-，正常运行的状态，tick数据写入clickhouse的buffer-table，数据库自行管理buffer异步落地。
-
-![](/images/fig2.png)
