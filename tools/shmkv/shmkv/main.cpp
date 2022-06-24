@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "logger.h"
 #include <iostream>
 #include <string>
 
@@ -67,6 +68,7 @@ int test_del() {
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
+    create_logger("clogs/shm.log", "trace", false, true, false, 1, 1);
     test_set();
     test_get();
     test_del();
