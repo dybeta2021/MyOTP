@@ -118,12 +118,12 @@ namespace ots::shmkv {
                                                              skv_store_item_key_compare));
 
         if (p_cache_item == nullptr) {
-            DEBUG_LOG("Not found key: %.*s", key->len, key->data);
+            SPDLOG_TRACE("Not found key: %.*s", key->len, key->data);
             return SKV_NOT_FOUND;
         }
 
         if (p_cache_item->key_len == 0) {
-            DEBUG_LOG("The length of the key (%.*s) is invalid.", key->len, key->data);
+            SPDLOG_ERROR("The length of the key (%.*s) is invalid.", key->len, key->data);
             return SKV_ERROR;
         }
 
@@ -241,7 +241,7 @@ namespace ots::shmkv {
         //* 如果发现key data section空间内不够，重新创建一个snapshot（减少失去item指向的无效空间），然后将snapshot与store互换之后重复上一步操作。
         if ((store_hdr->key_section.used + (key->len + 1)) >
             store_hdr->key_section.size) {
-            DEBUG_LOG("Start to compact the key section.");
+            SPDLOG_INFO("Start to compact the key section.");
 
             offset = SKV_STORE_GET_SNAPSHOT_OFFSET(store_hdr->key_section);
             ret = skv_store_key_compaction(ctx, key, &p);
@@ -268,7 +268,7 @@ namespace ots::shmkv {
 
         if ((store_hdr->value_section.used + (value->len + 1)) >
             store_hdr->value_section.size) {
-            DEBUG_LOG("Start to compact the value section.");
+            SPDLOG_TRACE("Start to compact the value section.");
 
             offset = SKV_STORE_GET_SNAPSHOT_OFFSET(store_hdr->value_section);
 
@@ -304,7 +304,7 @@ namespace ots::shmkv {
         // 使用snapshot重建的store内包含一组重复，重复最新输入的这组key-value
         if ((store_hdr->value_section.used + (value->len + 1)) >
             store_hdr->value_section.size) {
-            DEBUG_LOG("Start to compact the value section.");
+            SPDLOG_INFO("Start to compact the value section.");
 
             offset = SKV_STORE_GET_SNAPSHOT_OFFSET(store_hdr->value_section);
 
@@ -443,11 +443,11 @@ namespace ots::shmkv {
                                                              skv_store_item_key_compare));
 
         if (p_cache_item == nullptr) {
-            DEBUG_LOG("Add key : %.*s - %.*s", key->len, key->data, value->len, value->data);
+            SPDLOG_TRACE("Add key : %.*s - %.*s", key->len, key->data, value->len, value->data);
             ret = skv_store_item_add(ctx, ctx->store_items_snapshot + p_item_section->used, key, value);
         } else {
-            DEBUG_LOG("Replace key(%.*s) with (%.*s)", key->len, key->data,
-                      value->len, value->data);
+            SPDLOG_TRACE("Replace key(%.*s) with (%.*s)", key->len, key->data,
+                         value->len, value->data);
             ret = skv_store_item_replace(ctx, p_cache_item, value);
         }
 
@@ -494,7 +494,7 @@ namespace ots::shmkv {
                                                              sizeof(skv_store_item),
                                                              skv_store_item_key_compare));
         if (p_cache_item == nullptr) {
-            DEBUG_LOG("Not found key: %.*s", key->len, key->data);
+            SPDLOG_TRACE("Not found key: %.*s", key->len, key->data);
             return SKV_NOT_FOUND;
         }
 
@@ -515,26 +515,26 @@ namespace ots::shmkv {
         int i;
         skv_store_item *p_item = nullptr;
 
-        DEBUG_LOG("------- SKV DUMP -------");
+        SPDLOG_TRACE("------- SKV DUMP -------");
         (void) p_item;
         p_item = ctx->store_items;
         for (i = 0; i < ctx->store_hdr->item_section.used; i++) {
-            DEBUG_LOG("index: %d, key: %.*s, value: %.*s", i,
-                      p_item[i].key_len,
-                      (char *) ctx->store_hdr + p_item[i].key_offset,
-                      p_item[i].value_len,
-                      (char *) ctx->store_hdr + p_item[i].value_offset);
+            SPDLOG_TRACE("index: %d, key: %.*s, value: %.*s", i,
+                         p_item[i].key_len,
+                         (char *) ctx->store_hdr + p_item[i].key_offset,
+                         p_item[i].value_len,
+                         (char *) ctx->store_hdr + p_item[i].value_offset);
         }
 
-        DEBUG_LOG("--------------");
+        SPDLOG_TRACE("--------------");
 
         p_item = ctx->store_items_snapshot;
         for (i = 0; i < ctx->store_hdr->item_section.used; i++) {
-            DEBUG_LOG("index: %d, key: %.*s, value: %.*s", i,
-                      p_item[i].key_len,
-                      (char *) ctx->store_hdr + p_item[i].key_offset,
-                      p_item[i].value_len,
-                      (char *) ctx->store_hdr + p_item[i].value_offset);
+            SPDLOG_TRACE("index: %d, key: %.*s, value: %.*s", i,
+                         p_item[i].key_len,
+                         (char *) ctx->store_hdr + p_item[i].key_offset,
+                         p_item[i].value_len,
+                         (char *) ctx->store_hdr + p_item[i].value_offset);
         }
 
         return SKV_OK;
