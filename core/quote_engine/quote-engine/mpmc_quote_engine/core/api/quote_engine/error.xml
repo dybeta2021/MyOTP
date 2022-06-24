@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by wangzhaodong (ORiON) -->
+<!DOCTYPE errors SYSTEM "/Users/稻草人/aliyun/MyOTP/cpp-dev/otp/quote_engine/core/api/quote_engine/error.dtd">
+<errors>
+	<error id="NONE" value="0" prompt="CTP:��ȷ"/>
+	<error id="INVALID_DATA_SYNC_STATUS" value="1" prompt="CTP:������ͬ��״̬"/>
+	<error id="INCONSISTENT_INFORMATION" value="2" prompt="CTP:�Ự��Ϣ��һ��"/>
+	<error id="INVALID_LOGIN" value="3" prompt="CTP:���Ϸ��ĵ�¼"/>
+	<error id="USER_NOT_ACTIVE" value="4" prompt="CTP:�û�����Ծ"/>
+	<error id="DUPLICATE_LOGIN" value="5" prompt="CTP:�ظ��ĵ�¼"/>
+	<error id="NOT_LOGIN_YET" value="6" prompt="CTP:��û�е�¼"/>
+	<error id="NOT_INITED" value="7" prompt="CTP:��û�г�ʼ��"/>
+	<error id="FRONT_NOT_ACTIVE" value="8" prompt="CTP:ǰ�ò���Ծ"/>
+	<error id="NO_PRIVILEGE" value="9" prompt="CTP:�޴�Ȩ��"/>
+	<error id="CHANGE_OTHER_PASSWORD" value="10" prompt="CTP:�޸ı��˵Ŀ���"/>
+	<error id="USER_NOT_FOUND" value="11" prompt="CTP:�Ҳ������û�"/>
+	<error id="BROKER_NOT_FOUND" value="12" prompt="CTP:�Ҳ����þ��͹�˾"/>
+	<error id="INVESTOR_NOT_FOUND" value="13" prompt="CTP:�Ҳ���Ͷ����"/>
+	<error id="OLD_PASSWORD_MISMATCH" value="14" prompt="CTP:ԭ���ƥ��"/>
+	<error id="BAD_FIELD" value="15" prompt="CTP:�����ֶ�����"/>
+	<error id="INSTRUMENT_NOT_FOUND" value="16" prompt="CTP:�Ҳ�����Լ"/>
+	<error id="INSTRUMENT_NOT_TRADING" value="17" prompt="CTP:��Լ���ܽ���"/>
+	<error id="NOT_EXCHANGE_PARTICIPANT" value="18" prompt="CTP:���͹�˾���ǽ������Ļ�Ա"/>
+	<error id="INVESTOR_NOT_ACTIVE" value="19" prompt="CTP:Ͷ���߲���Ծ"/>
+	<error id="NOT_EXCHANGE_CLIENT" value="20" prompt="CTP:Ͷ����δ�ڽ���������"/>
+	<error id="NO_VALID_TRADER_AVAILABLE" value="21" prompt="CTP:�ý���ϯλδ���ӵ�������"/>
+	<error id="DUPLICATE_ORDER_REF" value="22" prompt="CTP:�������󣺲������ظ�����"/>
+	<error id="BAD_ORDER_ACTION_FIELD" value="23" prompt="CTP:����ı��������ֶ�"/>
+	<error id="DUPLICATE_ORDER_ACTION_REF" value="24" prompt="CTP:�����ѱ��ͣ��������ظ�����"/>
+	<error id="ORDER_NOT_FOUND" value="25" prompt="CTP:�����Ҳ�����Ӧ����"/>
+	<error id="INSUITABLE_ORDER_STATUS" value="26" prompt="CTP:������ȫ�ɽ����ѳ����������ٳ�"/>
+	<error id="UNSUPPORTED_FUNCTION" value="27" prompt="CTP:��֧�ֵĹ���"/>
+	<error id="NO_TRADING_RIGHT" value="28" prompt="CTP:û�б�������Ȩ��"/>
+	<error id="CLOSE_ONLY" value="29" prompt="CTP:ֻ��ƽ��"/>
+	<error id="OVER_CLOSE_POSITION" value="30" prompt="CTP:ƽ���������ֲ���"/>
+	<error id="INSUFFICIENT_MONEY" value="31" prompt="CTP:�ʽ���"/>
+	<error id="DUPLICATE_PK" value="32" prompt="CTP:�����ظ�"/>
+	<error id="CANNOT_FIND_PK" value="33" prompt="CTP:�Ҳ�������"/>
+	<error id="CAN_NOT_INACTIVE_BROKER" value="34" prompt="CTP:���þ��͹�˾����Ծ״̬ʧ��"/>
+	<error id="BROKER_SYNCHRONIZING" value="35" prompt="CTP:���͹�˾����ͬ��"/>
+	<error id="BROKER_SYNCHRONIZED" value="36" prompt="CTP:���͹�˾��ͬ��"/>
+	<error id="SHORT_SELL" value="37" prompt="CTP:�ֻ����ײ�������"/>
+	<error id="INVALID_SETTLEMENT_REF" value="38" prompt="CTP:���Ϸ��Ľ�������"/>
+	<error id="CFFEX_NETWORK_ERROR" value="39" prompt="CTP:��������������ʧ��"/>
+	<error id="CFFEX_OVER_REQUEST" value="40" prompt="CTP:������δ�������󳬹�������"/>
+	<error id="CFFEX_OVER_REQUEST_PER_SECOND" value="41" prompt="CTP:������ÿ�뷢������������������"/>
+	<error id="SETTLEMENT_INFO_NOT_CONFIRMED" value="42" prompt="CTP:������δȷ��"/>
+	<error id="DEPOSIT_NOT_FOUND" value="43" prompt="CTP:û�ж�Ӧ������¼"/>
+	<error id="EXCHANG_TRADING" value="44" prompt="CTP:�������Ѿ�������������״̬"/>
+	<error id="PARKEDORDER_NOT_FOUND" value="45" prompt="CTP:�Ҳ���Ԥ�񣨳�������"/>
+	<error id="PARKEDORDER_HASSENDED" value="46" prompt="CTP:Ԥ�񣨳��������Ѿ�����"/>
+	<error id="PARKEDORDER_HASDELETE" value="47" prompt="CTP:Ԥ�񣨳��������Ѿ�ɾ��"/>
+	<error id="INVALID_INVESTORIDORPASSWORD" value="48" prompt="CTP:��Ч��Ͷ���߻�������"/>
+	<error id="INVALID_LOGIN_IPADDRESS" value="49" prompt="CTP:���Ϸ��ĵ�¼IP��ַ"/>
+	<error id="OVER_CLOSETODAY_POSITION" value="50" prompt="CTP:ƽ���λ����"/>
+	<error id="OVER_CLOSEYESTERDAY_POSITION" value="51" prompt="CTP:ƽ���λ����"/>
+	<error id="BROKER_NOT_ENOUGH_CONDORDER" value="52" prompt="CTP:���͹�˾û���㹻���õ�����������"/>
+	<error id="INVESTOR_NOT_ENOUGH_CONDORDER" value="53" prompt="CTP:Ͷ����û���㹻���õ�����������"/>
+	<error id="BROKER_NOT_SUPPORT_CONDORDER" value="54" prompt="CTP:���͹�˾��֧��������"/>
+	<error id="RESEND_ORDER_BROKERINVESTOR_NOTMATCH" value="55" prompt="CTP:�ط�δ֪�����͹�˾/Ͷ���߲�ƥ��"/>
+	<error id="SYC_OTP_FAILED" value="56" prompt="CTP:ͬ����̬����ʧ��"/>
+	<error id="OTP_MISMATCH" value="57" prompt="CTP:��̬����У�����"/>
+	<error id="OTPPARAM_NOT_FOUND" value="58" prompt="CTP:�Ҳ�����̬����������Ϣ"/>
+	<error id="UNSUPPORTED_OTPTYPE" value="59" prompt="CTP:��֧�ֵĶ�̬��������"/>
+	<error id="SINGLEUSERSESSION_EXCEED_LIMIT" value="60" prompt="CTP:�û����߻Ự��������"/>
+	<error id="EXCHANGE_UNSUPPORTED_ARBITRAGE" value="61" prompt="CTP:�ý�������֧������/���������ͱ���"/>
+	<error id="NO_CONDITIONAL_ORDER_RIGHT" value="62" prompt="CTP:û������������Ȩ��"/>
+	<error id="AUTH_FAILED" value="63" prompt="CTP:�ͻ�����֤ʧ��"/>
+	<error id="NOT_AUTHENT" value="64" prompt="CTP:�ͻ���δ��֤"/>
+	<error id="SWAPORDER_UNSUPPORTED" value="65" prompt="CTP:�ú�Լ��֧�ֻ������ͱ���"/>
+	<error id="OPTIONS_ONLY_SUPPORT_SPEC" value="66" prompt="CTP:����Ȩ��Լֻ֧��Ͷ�����ͱ���"/>
+	<error id="DUPLICATE_EXECORDER_REF" value="67" prompt="CTP:ִ��������󣬲������ظ�ִ��"/>
+	<error id="RESEND_EXECORDER_BROKERINVESTOR_NOTMATCH" value="68" prompt="CTP:�ط�δִ֪�����澭�͹�˾/Ͷ���߲�ƥ��"/>
+	<error id="EXECORDER_NOTOPTIONS" value="69" prompt="CTP:ֻ����Ȩ��Լ��ִ��"/>
+	<error id="OPTIONS_NOT_SUPPORT_EXEC" value="70" prompt="CTP:����Ȩ��Լ��֧��ִ��"/>
+	<error id="BAD_EXECORDER_ACTION_FIELD" value="71" prompt="CTP:ִ�������ֶ�����"/>
+	<error id="DUPLICATE_EXECORDER_ACTION_REF" value="72" prompt="CTP:ִ�����泷���ѱ��ͣ��������ظ�����"/>
+	<error id="EXECORDER_NOT_FOUND" value="73" prompt="CTP:ִ�����泷���Ҳ�����Ӧִ������"/>
+	<error id="OVER_EXECUTE_POSITION" value="74" prompt="CTP:ִ�в�λ����"/>
+	<error id="LOGIN_FORBIDDEN" value="75" prompt="CTP:������¼ʧ�ܴ������ޣ���¼����ֹ"/>
+	<error id="INVALID_TRANSFER_AGENT" value="76" prompt="CTP:�Ƿ����ڴ�����ϵ"/>
+	<error id="NO_FOUND_FUNCTION" value="77" prompt="CTP:�޴˹���"/>
+	<error id="SEND_EXCHANGEORDER_FAILED" value="78" prompt="CTP:���ͱ���ʧ��"/>
+	<error id="SEND_EXCHANGEORDERACTION_FAILED" value="79" prompt="CTP:���ͱ�������ʧ��"/>
+	<error id="PRICETYPE_NOTSUPPORT_BYEXCHANGE" value="80" prompt="CTP:��������֧�ֵļ۸�����"/>
+	<error id="BAD_EXECUTE_TYPE" value="81" prompt="CTP:�����ִ������"/>
+	<error id="BAD_OPTION_INSTR" value="82" prompt="CTP:��Ч����Ϻ�Լ"/>
+	<error id="INSTR_NOTSUPPORT_FORQUOTE" value="83" prompt="CTP:�ú�Լ��֧��ѯ��"/>
+	<error id="RESEND_QUOTE_BROKERINVESTOR_NOTMATCH" value="84" prompt="CTP:�ط�δ֪���۾��͹�˾/Ͷ���߲�ƥ��"/>
+	<error id="INSTR_NOTSUPPORT_QUOTE" value="85" prompt="CTP:�ú�Լ��֧�ֱ���"/>
+	<error id="QUOTE_NOT_FOUND" value="86" prompt="CTP:���۳����Ҳ�����Ӧ����"/>
+	<error id="OPTIONS_NOT_SUPPORT_ABANDON" value="87" prompt="CTP:����Ȩ��Լ��֧�ַ���ִ��"/>
+	<error id="COMBOPTIONS_SUPPORT_IOC_ONLY" value="88" prompt="CTP:�������Ȩ��Լֻ֧��IOC"/>
+	<error id="OPEN_FILE_FAILED" value="89" prompt="CTP:���ļ�ʧ��"/>
+	<error id="NEED_RETRY" value="90" prompt="CTP����ѯδ���������Ժ�����"/>
+	<error id="EXCHANGE_RTNERROR" value="91" prompt="CTP�����������صĴ���"/>
+	<error id="QUOTE_DERIVEDORDER_ACTIONERROR" value="92" prompt="CTP:����������Ҫ�ȴ����������ز��ܳ���"/>
+	<error id="INSTRUMENTMAP_NOT_FOUND" value="93" prompt="CTP:�Ҳ�����Ϻ�Լӳ��"/>
+	<error id="CANCELLATION_OF_OTC_DERIVED_ORDER_NOT_ALLOWED" value="94" prompt="CTP:����������OTC��������"/>
+	<error id="BAD_PRICE_VALUE" value="95" prompt="CTP����֧�ֵļ۸�"/>
+	<!--�ֱ�ϵͳ������� -->		
+	<error id="NO_TRADING_RIGHT_IN_SEPC_DR" value="101" prompt="CTP:�û��ڱ�ϵͳû�б���Ȩ��"/>
+	<error id="NO_DR_NO" value="102" prompt="CTP:ϵͳȱ���ֱ���ʾ��"/>
+	<error id="BATCHACTION_NOSUPPORT" value="103" prompt="CTP:�ý�������֧����������"/>
+	<error id="POSI_LIMIT" value="106" prompt="CTP:Ͷ�����޲�"/>
+	<error id="OUT_OF_TIMEINTERVAL" value="113" prompt="CTP:��ǰʱ���ֹѯ��"/>
+	<error id="OUT_OF_PRICEINTERVAL" value="114" prompt="CTP:��ǰ�۲��ֹѯ��"/>
+	<error id="ORDER_FREQ_LIMIT" value="116" prompt="CTP:�µ�Ƶ������"/>
+	<error id="WEAK_PASSWORD" value="131" prompt="CTP������ǰ����Ϊ�����룬���޸ĳ�ǿ��������µ�¼"/>
+	<error id="EXEC_FORBIDDEN_TIME" value="139" prompt="CTP:��ǰʱ���ֹ��Ȩ"/>
+	<error id="FIRST_LOGIN" value="140" prompt="CTP:�״ε�¼�����޸����룬���޸���������µ�¼"/>
+	<error id="PWD_OUT_OF_DATE" value="141" prompt="CTP:����ǰ�����ѹ��ڣ����޸ĺ��¼"/>
+	<error id="PWD_MUST_DIFF" value="142" prompt="CTP:�޸�����ʧ�ܡ������벻�������������ͬ"/>
+	<error id="IP_FORBIDDEN" value="143" prompt="CTP:����¼ʧ�ܴ������࣬IP����ֹ����CTP"/>
+	<error id="IP_BLACK" value="144" prompt="CTP:����ǰIP�ں������У�����ֹ��¼����֤"/>
+	<error id="NO_AUTH_RIGHT_IN_SEPC_DR" value="145" prompt="CTP:�ն��ڱ�ϵͳû����֤Ȩ��"/>
+	<error id="INVESTOR_ID_IS_MISSING" value="146" prompt="CTP:ȱ��InvestorID�ֶΣ�������InvestorID"/>
+	<error id="EXCHANGE_ID_IS_MISSING" value="147" prompt="CTP:ȱ��ExchangeID�ֶΣ�������ExchangeID"/>
+	<error id="EXCHANGE_ID_IS_INVALID" value="148" prompt="CTP:��Ч��ExchangeID�ֶΣ���������ȷ��ExchangeID"/>
+	<error id="ACCOUNT_ID_IS_MISSING" value="149" prompt="CTP:ȱ��AccountID�ֶΣ�������AccountID"/>
+	<error id="EXCHANGE_ID_IS_WRONG" value="150" prompt="CTP:�������������"/>
+	<error id="DEL_COMB_ACTION_NO_REC" value="151" prompt="CTP:ɾ��������ָ�û���ҵ��ü�¼"/>
+	<error id="DEL_COMB_ACTION_TOO_FAST" value="152" prompt="CTP:ɾ��������ָ�ԭָ����Ҫ�ȴ�30s ����ɾ��"/>
+	<error id="COMB_ACTION_SHORT_MONEY" value="153" prompt="CTP:������Ǯ����"/>
+	<error id="QK_BUSY" value="154" prompt="CTP:��ѯ����æ ���Ժ�����"/>
+	<!--ת��ϵͳ������� -->
+	<error id="SEND_INSTITUTION_CODE_ERROR" value="1000" prompt="CTP:����ת�ˣ����ͻ����������"/>
+	<error id="NO_GET_PLATFORM_SN" value="1001" prompt="CTP:����ת�ˣ�ȡƽ̨��ˮ�Ŵ���"/>
+	<error id="ILLEGAL_TRANSFER_BANK" value="1002" prompt="CTP:����ת�ˣ����Ϸ���ת������"/>
+	<error id="ALREADY_OPEN_ACCOUNT" value="1003" prompt="CTP:����ת�ˣ��Ѿ�����"/>
+	<error id="NOT_OPEN_ACCOUNT" value="1004" prompt="CTP:����ת�ˣ�δ����"/>
+	<error id="PROCESSING" value="1005" prompt="CTP:����ת�ˣ�������"/>
+	<error id="OVERTIME" value="1006" prompt="CTP:����ת�ˣ����׳�ʱ"/>
+	<error id="RECORD_NOT_FOUND" value="1007" prompt="CTP:����ת�ˣ��Ҳ�����¼"/>
+	<error id="NO_FOUND_REVERSAL_ORIGINAL_TRANSACTION" value="1008" prompt="CTP:����ת�ˣ��Ҳ�����������ԭʼ����"/>
+	<error id="CONNECT_HOST_FAILED" value="1009" prompt="CTP:����ת�ˣ���������ʧ��"/>
+	<error id="SEND_FAILED" value="1010" prompt="CTP:����ת�ˣ�����ʧ��"/>
+	<error id="LATE_RESPONSE" value="1011" prompt="CTP:����ת�ˣ��ٵ�Ӧ��"/>	
+	<error id="REVERSAL_BANKID_NOT_MATCH" value="1012" prompt="CTP:����ת�ˣ������������д������"/>
+	<error id="REVERSAL_BANKACCOUNT_NOT_MATCH" value="1013" prompt="CTP:����ת�ˣ��������������˻�����"/>
+	<error id="REVERSAL_BROKERID_NOT_MATCH" value="1014" prompt="CTP:����ת�ˣ��������׾��͹�˾�������"/>
+	<error id="REVERSAL_ACCOUNTID_NOT_MATCH" value="1015" prompt="CTP:����ת�ˣ����������ʽ��˻�����"/>
+	<error id="REVERSAL_AMOUNT_NOT_MATCH" value="1016" prompt="CTP:����ת�ˣ��������׽��׽�����"/>
+	<error id="DB_OPERATION_FAILED" value="1017" prompt="CTP:����ת�ˣ����ݿ��������"/>
+ 	<error id="SEND_ASP_FAILURE" value="1018" prompt="CTP:����ת�ˣ����͵�����ϵͳʧ��"/>
+  <error id="NOT_SIGNIN" value="1019" prompt="CTP:����ת�ˣ�û��ǩ��"/>
+  <error id="ALREADY_SIGNIN" value="1020" prompt="CTP:����ת�ˣ��Ѿ�ǩ��"/>		
+  <error id="AMOUNT_OR_TIMES_OVER" value="1021" prompt="CTP:����ת�ˣ������������"/>
+  <error id="NOT_IN_TRANSFER_TIME" value="1022" prompt="CTP:����ת�ˣ���һʱ��β���ת��"/>  
+  <error id="BANK_SERVER_ERROR" value="1023" prompt="����������"/>  
+  <error id="BANK_SERIAL_IS_REPEALED" value="1024" prompt="CTP:����ת�ˣ������Ѿ�����"/>  
+  <error id="BANK_SERIAL_NOT_EXIST" value="1025" prompt="CTP:����ת�ˣ�������ˮ������"/> 
+  <error id="NOT_ORGAN_MAP" value="1026" prompt="CTP:����ת�ˣ�����û��ǩԼ"/>
+  <error id="EXIST_TRANSFER" value="1027" prompt="CTP:����ת�ˣ�����ת�ˣ���������"/>    
+  <error id="BANK_FORBID_REVERSAL" value="1028" prompt="CTP:����ת�ˣ����в�֧�ֳ���"/> 
+  <error id="DUP_BANK_SERIAL" value="1029" prompt="CTP:����ת�ˣ��ظ���������ˮ"/>
+  <error id="FBT_SYSTEM_BUSY" value="1030" prompt="CTP:����ת�ˣ�ת��ϵͳæ���Ժ�����"/>
+  <error id="MACKEY_SYNCING" value="1031" prompt="CTP:����ת�ˣ�MAC��Կ����ͬ��"/>
+  <error id="ACCOUNTID_ALREADY_REGISTER" value="1032" prompt="CTP:����ת�ˣ��ʽ��˻��Ѿ��Ǽ�"/>
+  <error id="BANKACCOUNT_ALREADY_REGISTER" value="1033" prompt="CTP:����ת�ˣ������˻��Ѿ��Ǽ�"/>
+  <error id="DUP_BANK_SERIAL_REDO_OK" value="1034" prompt="CTP:����ת�ˣ��ظ���������ˮ,�ط��ɹ�"/>       
+  <error id="CURRENCYID_NOT_SUPPORTED" value="1035" prompt="CTP:����ת�ˣ��ñ��ִ��벻֧��"/>
+  <error id="INVALID_MAC" value="1036" prompt="CTP:����ת�ˣ�MACֵ��֤ʧ��"/>
+  <error id="NOT_SUPPORT_SECAGENT_BY_BANK" value="1037" prompt="CTP:����ת�ˣ���֧�����ж˷���Ķ���������ת�˺Ͳ�ѯ"/>
+  <error id="PINKEY_SYNCING" value="1038" prompt="CTP:����ת�ˣ�PIN��Կ����ͬ��"/>
+  <error id="SECAGENT_QUERY_BY_CCB" value="1039" prompt="CTP:����ת�ˣ����з���Ķ��������̲�ѯ"/>
+  <error id="BANKACCOUNT_NOT_EMPTY" value="1040" prompt="CTP:����ת�ˣ������˻�����Ϊ��"/>
+  <error id="INVALID_RESERVE_OPEN_ACCOUNT" value="1041" prompt="CTP:����ת�ˣ��ʽ��˻����ڣ�ԤԼ����ʧ��"/>
+  <error id="OPEN_ACCOUNT_NOT_DEFAULT_ACCOUNT" value="1042" prompt="CTP:����ת�ˣ�������������п��ź�Ԥ�����˺Ų�ͬ"/>
+  <error id="BANK_SYSTEM_INTERNAL_ERROR" value="1043" prompt="����ϵͳ�ڲ�����"/>
+<!-- add for transfer begin -->
+	<error id="NO_VALID_BANKOFFER_AVAILABLE" value="2000" prompt="CTP:�ñ���δ���ӵ�����"/>
+	<error id="PASSWORD_MISMATCH" value="2001" prompt="CTP:�ʽ��������"/>
+	<error id="DUPLATION_BANK_SERIAL" value="2004" prompt="CTP:������ˮ���ظ�"/>
+	<error id="DUPLATION_OFFER_SERIAL" value="2005" prompt="CTP:������ˮ���ظ�"/>
+	<error id="SERIAL_NOT_EXSIT" value="2006" prompt="CTP:��������ˮ������(��������)"/>
+	<error id="SERIAL_IS_REPEALED" value="2007" prompt="CTP:ԭ��ˮ�ѳ���(��������)"/>
+	<error id="SERIAL_MISMATCH" value="2008" prompt="CTP:��ԭ��ˮ��Ϣ����(��������)"/>
+	<error id="IdentifiedCardNo_MISMATCH" value="2009" prompt="CTP:֤����������ʹ���"/>
+	<error id="ACCOUNT_NOT_FUND" value="2011" prompt="CTP:�ʽ��˻�������"/>
+	<error id="ACCOUNT_NOT_ACTIVE" value="2012" prompt="CTP:�ʽ��˻��Ѿ�����"/>
+	<error id="NOT_ALLOW_REPEAL_BYMANUAL" value="2013" prompt="CTP:�ý��ײ���ִ���ֹ�����"/>
+	<error id="AMOUNT_OUTOFTHEWAY" value="2014" prompt="CTP:ת�ʽ�����"/>
+	<error id="EXCHANGERATE_NOT_FOUND" value="2015" prompt="CTP:�Ҳ�������"/>
+	<error id="RESERVE_OPEN_ACCOUNT_NOT_FUND" value="2016" prompt="CTP:�Ҳ���ԤԼ��������"/>
+	<error id="DUPLICATE_RESERVE_OPEN_ACCOUNT_NOT_FUND" value="2017" prompt="CTP:�ظ���ԤԼ��������"/>
+	<error id="WAITING_OFFER_RSP" value="999999" prompt="CTP:�ȴ����ڱ��̴������"/>
+
+	<!-- add for transfer end -->
+	<!--add ������һ������-->
+  <error id="PW_PASSWORD" value="2050" prompt="�������ڣ���������֤(ҵ�����)"/> 
+  <error id="AL_AMOUNT_LIMITATION" value="2051" prompt="�������ڣ��������޶�(ҵ�����)"/> 
+  <error id="AC_AUTHORITY_CONTROL" value="2052" prompt="�������ڣ�Ȩ�޿���(ҵ�����)"/> 
+  <error id="DC_DATA_CONTEXT" value="2053" prompt="�������ڣ���Ϣ��ȱ(ҵ�����)���������������(��������)"/> 
+  <error id="CE_CONTENT_ERROR" value="2054" prompt="�������ڣ����ݷǷ�(ҵ�����)"/> 
+  <error id="DO_DUPLICATE_OPERATION" value="2055" prompt="�������ڣ��ظ�����(ҵ�����)"/> 
+  <error id="TM_TIME" value="2056" prompt="�������ڣ� ʱ��������(ҵ�����)"/> 
+  <error id="RC_RISK_CONTROL" value="2057" prompt="�������ڣ����տ���(ҵ�����)"/> 
+  <error id="BL_BUSINESS_LOGIC" value="2058" prompt="�������ڣ�ҵ���߼�(ҵ�����)"/> 
+  <error id="NA_NA" value="2059" prompt="�������ڣ� ��ȷ�����׽��(��������)"/> 
+  <error id="HW_HARDWARE" value="2060" prompt="�������ڣ� Ӳ������(��������)"/> 
+  <error id="IO_IO" value="2062" prompt="�������ڣ� ��д���(��������)"/> 
+  <error id="DB_DATABASE" value="2063" prompt="�������ڣ� ���ݿ����(��������)"/> 
+  <error id="NC_NETWORK_COMMUNICATION" value="2064" prompt="�������ڣ�����ͨѶ(��������)"/> 
+  <error id="SS_SECURITY_SERVICE" value="2065" prompt="�������ڣ���ȫ����(��������)"/> 
+  <error id="CM_COMPONENTS" value="2066" prompt="�������ڣ� ���ģ��(��������)"/> 
+  <error id="FC_FLOW_CONTROL" value="2067" prompt="�������ڣ���������(��������)"/> 
+  <error id="TL_TECHNICAL_LOGIC" value="2069" prompt="�������ڣ������߼�(��������)"/> 
+  <error id="AT_ABSOLUTE_TECHNIQUE" value="2070" prompt="�������ڣ��������Դ���(��������)"/> 
+~
+	<!--end ������һ������-->
+	<!--����ϵͳ������� bgn-->
+	<error id="FBE_NO_GET_PLATFORM_SN" value="3001" prompt="CTP:���ڻ��㣺ȡƽ̨��ˮ�Ŵ���"/>
+	<error id="FBE_ILLEGAL_TRANSFER_BANK" value="3002" prompt="CTP:���ڻ��㣺���Ϸ���ת������"/>
+	<error id="FBE_PROCESSING" value="3005" prompt="CTP:���ڻ��㣺������"/>
+	<error id="FBE_OVERTIME" value="3006" prompt="CTP:���ڻ��㣺���׳�ʱ"/>
+	<error id="FBE_RECORD_NOT_FOUND" value="3007" prompt="CTP:���ڻ��㣺�Ҳ�����¼"/>
+	<error id="FBE_CONNECT_HOST_FAILED" value="3009" prompt="CTP:���ڻ��㣺��������ʧ��"/>
+	<error id="FBE_SEND_FAILED" value="3010" prompt="CTP:���ڻ��㣺����ʧ��"/>
+	<error id="FBE_LATE_RESPONSE" value="3011" prompt="CTP:���ڻ��㣺�ٵ�Ӧ��"/>	
+	<error id="FBE_DB_OPERATION_FAILED" value="3017" prompt="CTP:���ڻ��㣺���ݿ��������"/>
+  <error id="FBE_NOT_SIGNIN" value="3019" prompt="CTP:���ڻ��㣺û��ǩ��"/>
+  <error id="FBE_ALREADY_SIGNIN" value="3020" prompt="CTP:���ڻ��㣺�Ѿ�ǩ��"/>		
+  <error id="FBE_AMOUNT_OR_TIMES_OVER" value="3021" prompt="CTP:���ڻ��㣺�����������"/>
+  <error id="FBE_NOT_IN_TRANSFER_TIME" value="3022" prompt="CTP:���ڻ��㣺��һʱ��β��ܻ���"/>  
+  <error id="FBE_BANK_SERVER_ERROR" value="3023" prompt="CTP:���ڻ��㣺����������"/>  
+  <error id="FBE_NOT_ORGAN_MAP" value="3026" prompt="CTP:���ڻ��㣺����û��ǩԼ"/>
+  <error id="FBE_SYSTEM_BUSY" value="3030" prompt="CTP:���ڻ��㣺����ϵͳæ���Ժ�����"/>
+  <error id="FBE_CURRENCYID_NOT_SUPPORTED" value="3035" prompt="CTP:���ڻ��㣺�ñ��ִ��벻֧��"/>
+  <error id="FBE_WRONG_BANK_ACCOUNT" value="3036" prompt="CTP:���ڻ��㣺�����ʺŲ���ȷ"/>
+  <error id="FBE_BANK_ACCOUNT_NO_FUNDS" value="3037" prompt="CTP:���ڻ��㣺�����ʻ�����"/>
+  <error id="FBE_DUP_CERT_NO" value="3038" prompt="CTP:���ڻ��㣺ƾ֤���ظ�"/>
+  <!--����ϵͳ������� end-->
+
+   <!--��¼��Ȩ������� begin-->
+  <error id="API_UNSUPPORTED_VERSION" value="3039" prompt="CTP: ��֧�ָ�API�汾"/>
+  <error id="API_INVALID_KEY" value="3040" prompt="CTP: ��Ч��API KEY"/>
+  <!--��¼��Ȩ������� end-->
+  
+  <error id="OPTION_SELF_CLOSE_NOT_OPTION" value="3041" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:����Ȩ��Լ"/>
+  <error id="OPTION_SELF_CLOSE_DUPLICATE_REF" value="3042" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:�������ò��Ϸ�"/>
+  <error id="OPTION_SELF_CLOSE_BAD_FIELD" value="3043" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:�Ƿ��ֶ� "/>
+  <error id="OPTION_SELF_CLOSE_REC_NOT_FOUND" value="3044" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:����δ�ҵ���¼"/>
+  <error id="OPTION_SELF_CLOSE_STATUS_ERR" value="3045" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:�Գ�״̬���ԣ����ܳ���"/>
+  <error id="OPTION_SELF_CLOSE_DOUBLE_SET_ERR" value="3046" prompt="CTP:��Ȩ�Գ�,��Լ�Գ�:�����ظ����ã�ֻ���ȳ���������"/>
+  <error id="QUOTE_WRONG_HEDGE_TYPE" value="3047" prompt="CTP:���۲�֧�ָ�Ͷ���ױ�����"/>
+  <error id="API_FRONT_SHAKE_HAND_ERR" value="4040" prompt="CTP:API Front shake hand err"/>
+  <error id="DUPLICATE_SUBMIT" value="4041" prompt="CTP:DUPLICATE_SUBMIT"/>
+  <error id="AUTHIP_CHECK_ERR" value="4042" prompt="CTP:IP��Ȩ��֤ʧ��"/>
+  <error id="AUTHUSER_CHECK_ERR" value="4043" prompt="CTP:�û���ͻ�����Ȩ��֤ʧ��"/>
+  <error id="QUOTE_WRONG_REPALACE_SYSID" value="4050" prompt="CTP:����ָ���Ķ�����Ų��Ϸ����н�����"/>
+  <error id="AUTH_IP_FORBIDDEN" value="4060" prompt="CTP:����֤ʧ�ܴ������࣬IP������֤��ֹ�б�"/>
+
+   <error id="SCAPI_SSL_CONNECT_ERR" value="4100" prompt="CTP:SSL Connect Error."/>
+   <error id="SCAPI_WRONG_USERIDORNAME" value="4101" prompt="CTP:Wrong User ID or Name."/>
+   <error id="SCAPI_CERT_VERIFY_FAILED" value="4102" prompt="CTP:Cert Verify Failed."/>
+   <error id="SCAPI_CERT_PROCESS_TIMEOUT" value="4103" prompt="CTP:Cert Process Timeout."/>
+   <error id="SCAPI_LOGIN_ERROR" value="4104" prompt="CTP:Login Error."/>
+
+</errors>
