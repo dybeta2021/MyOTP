@@ -6,11 +6,10 @@
 #define SHMKV_SHMKV_H
 
 #include "skv_config.h"
-#include <string>
-//#include "skv_data.h"
-#include "skv_debug.h"
 #include "skv_shm.h"
 #include "skv_store.h"
+#include "spdlog/spdlog.h"
+#include <string>
 
 namespace ots::shmkv {
     inline int skv_init(skv_ctx *ctx,
@@ -22,7 +21,7 @@ namespace ots::shmkv {
         skv_store_hdr store_hdr;
 
         if (ctx->init) {
-            DEBUG_LOG("This library has been initialized.");
+            SPDLOG_INFO("This library has been initialized.");
             return SKV_ERROR;
         }
 

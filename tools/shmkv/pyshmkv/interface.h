@@ -24,9 +24,9 @@ namespace ots::shmkv {
                                    const bool &write_mode) {
             if (write_mode) {
                 if (remove(const_cast<char *>(path.c_str())) == 0)
-                    printf("Removed %s succeeded.\n", const_cast<char *>(path.c_str()));
+                    SPDLOG_INFO("Removed {} succeeded.", const_cast<char *>(path.c_str()));
                 else
-                    DEBUG_LOG("Removed %s failed.\n", const_cast<char *>(path.c_str()));
+                    SPDLOG_INFO("Removed {} failed.", const_cast<char *>(path.c_str()));
             }
         }
 
@@ -42,7 +42,7 @@ namespace ots::shmkv {
             }
 
             if (ret != SKV_OK) {
-                DEBUG_LOG("Failed to initialize skv.\n");
+                SPDLOG_ERROR("Failed to initialize skv.");
                 return ret;
             }
             return 0;
@@ -67,7 +67,7 @@ namespace ots::shmkv {
             cache_ptr = malloc(count * sizeof(skv_store_item) + 1);
 
             if (process_lock & thread_lock) {
-                DEBUG_LOG("error config, process_lock true, thread_lock true!");
+                SPDLOG_ERROR("error config, process_lock true, thread_lock true!");
                 exit(SKV_ERROR);
             }
 
@@ -80,7 +80,7 @@ namespace ots::shmkv {
             skv_finish(&ctx);
             delete ptr_process_mutex;
             free(cache_ptr);
-            cache_ptr = NULL;
+            cache_ptr = nullptr;
         }
 
     public:
@@ -96,7 +96,7 @@ namespace ots::shmkv {
 
             int ret = skv_set(&ctx, &skv_key, &skv_value);
             if (ret != SKV_OK) {
-                DEBUG_LOG("Failed to set %.*s.\n", skv_key.len, skv_key.data);
+                SPDLOG_ERROR("Failed to set {}.", skv_key.data);
                 return true;
             }
             return false;
@@ -135,7 +135,7 @@ namespace ots::shmkv {
 
             int ret = skv_get(&ctx, &skv_key, skv_value, cache_ptr);
             if (ret != SKV_OK) {
-                DEBUG_LOG("Failed to get %.*s.\n", skv_key.len, skv_key.data);
+                SPDLOG_ERROR("Failed to get {}", skv_key.data);
                 return true;
             }
             return false;

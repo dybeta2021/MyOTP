@@ -3,14 +3,13 @@
 //
 // malloc/free只是动态分配内存空间/释放空间。而new/delete除了分配空间还会调用构造函数和析构函数进行初始化与清理（清理成员）。
 
-#include "encoding.h"
+#include "logger.h"
 #include "interface.h"
-#include <iostream>
 #include <memory>
 #include <pybind11/pybind11.h>
 
-
 namespace py = pybind11;
+
 
 class PyShmKV {
 private:
@@ -25,6 +24,7 @@ public:
             const bool &thread_lock = false,
             const bool &process_lock = false,
             const std::string &process_mutex = "process_mutex") {
+        auto ret = create_logger("clogs/shmkv.log", "info", false, false, true, 1, 1);
         p = new ots::shmkv::ShmKV(path, count, value_size, write_mode, init_disk, thread_lock, process_lock, process_mutex);
     }
 
@@ -54,7 +54,7 @@ public:
 
     bool set_thread_mutex(const std::string &k,
                           const std::string &v,
-                          const unsigned int &value_len)  {
+                          const unsigned int &value_len) {
         bool ret = p->set_thread_mutex(const_cast<char *>(k.c_str()),
                                        static_cast<int>(k.length()),
                                        const_cast<char *>(v.c_str()),

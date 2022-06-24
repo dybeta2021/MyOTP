@@ -9,3 +9,5 @@ app/data_recorder/config/config.py
 app/data_recorder/config
 build
 cmake-build-release
+cmake-build-debug
+*.store

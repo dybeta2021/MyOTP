@@ -26,7 +26,7 @@ namespace ots::shmkv {
                 if (remove(const_cast<char *>(path.c_str())) == 0)
                     SPDLOG_INFO("Removed {} succeeded.", const_cast<char *>(path.c_str()));
                 else
-                    SPDLOG_ERROR("Removed {} failed.", const_cast<char *>(path.c_str()));
+                    SPDLOG_INFO("Removed {} failed.", const_cast<char *>(path.c_str()));
             }
         }
 
