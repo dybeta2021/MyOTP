@@ -56,7 +56,7 @@ int run_page_service(std::string &log_file, std::string &journal_folder) {
     yijinjing::PageEngine engine(journal_folder + "/" + "PAGE_ENGINE_COMM", journal_folder + "/" + "TEMP_PAGE");
 
     if (!stop_time_point.empty()) {
-        SPDLOG_INFO(">>> Add AutoTimeCtrl with stop time {}.\n", stop_time_point);
+        SPDLOG_INFO("Add AutoTimeCtrl with stop time {}.\n", stop_time_point);
         yijinjing::PstTimeCtrlPtr task_control(new yijinjing::PstTimeCtrl(&engine, stop_time_point));
         engine.add_task(task_control);
     }

@@ -366,6 +366,7 @@ int run_quote_engine(
     //日盘时间差 28800000， 夜盘时间差 25200000
     constexpr int sleep_seconds = 7 * 60 * 60;
     sleep(sleep_seconds);
+    SPDLOG_INFO("自动退出.");
     return 0;
 }
 

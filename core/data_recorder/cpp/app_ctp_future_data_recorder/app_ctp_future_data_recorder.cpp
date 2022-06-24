@@ -220,11 +220,9 @@ void run_data_recorder(std::string &front_address,
     auto end_time_num = kungfu::yijinjing::time::now_in_nano() + 28800000000000;
     SPDLOG_INFO("end_time_num: {}", end_time_num);
     std::thread t(tick_to_ck, std::ref(task_queue), std::ref(table_name), std::ref(end_time_num));
-//    client->Join();
+
     t.join();
-//    client->ReqUserLogout();
-//    client->Release();
-//    exit(0);
+    SPDLOG_INFO("自动退出.");
 }
 
 
