@@ -33,18 +33,18 @@ namespace ots::shmkv {
         if (op_type == SKV_OP_TYPE_RO) {
             fd = open(shm->path, O_RDONLY);
             if (fd == SKV_ERROR) {
-                SPDLOG_ERROR("Failed to open %s, errno: %d", shm->path, errno);
+                SPDLOG_ERROR("Failed to open {}, errno: {}", shm->path, errno);
                 return SKV_ERROR;
             }
 
             if (fstat(fd, &st) == SKV_ERROR) {
-                SPDLOG_ERROR("Failed to fstat %s, errno: %d", shm->path, errno);
+                SPDLOG_ERROR("Failed to fstat {}, errno: {}", shm->path, errno);
                 close(fd);
                 return SKV_ERROR;
             }
 
             if (st.st_size == 0) {
-                SPDLOG_ERROR("File %s is empty.", shm->path);
+                SPDLOG_ERROR("File {} is empty.", shm->path);
                 close(fd);
                 return SKV_ERROR;
             }
@@ -54,7 +54,7 @@ namespace ots::shmkv {
 
             shm->data = mmap(nullptr, shm->size, PROT_READ, MAP_PRIVATE, fd, 0);
             if (shm->data == MAP_FAILED) {
-                SPDLOG_ERROR("Failed to mmap(%s), size: %zd, errno: %d", shm->path,
+                SPDLOG_ERROR("Failed to mmap {}, size: {}, errno: {}", shm->path,
                              shm->size, errno);
                 close(fd);
                 return SKV_ERROR;
@@ -64,12 +64,12 @@ namespace ots::shmkv {
 
             fd = open(shm->path, flag, 0666);
             if (fd == SKV_ERROR) {
-                SPDLOG_ERROR("Failed to open %s, errno: %d", shm->path, errno);
+                SPDLOG_ERROR("Failed to open {}, errno: {}", shm->path, errno);
                 return SKV_ERROR;
             }
 
             if (fstat(fd, &st) == SKV_ERROR) {
-                SPDLOG_ERROR("Failed to fstat %s, errno: %d", shm->path, errno);
+                SPDLOG_ERROR("Failed to fstat {}, errno: {}", shm->path, errno);
                 close(fd);
                 return SKV_ERROR;
             }
@@ -84,7 +84,7 @@ namespace ots::shmkv {
 #else
                 if (ftruncate(fd, (off_t) shm->size) == SKV_ERROR) {
 #endif
-                    SPDLOG_ERROR("Failed to ftruncate %s, size: %zd, errno: %d",
+                    SPDLOG_ERROR("Failed to ftruncate {}, size: {}, errno: {}",
                                  shm->path, shm->size, errno);
                     return SKV_ERROR;
                 }
@@ -93,7 +93,7 @@ namespace ots::shmkv {
             shm->data =
                     mmap(nullptr, shm->size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
             if (shm->data == MAP_FAILED) {
-                SPDLOG_ERROR("Failed to mmap(%s), size: %zd, errno: %d", shm->path,
+                SPDLOG_ERROR("Failed to mmap {}, size: {}, errno: {}", shm->path,
                              shm->size, errno);
                 close(fd);
                 return SKV_ERROR;

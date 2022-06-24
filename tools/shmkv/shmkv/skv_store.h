@@ -118,12 +118,12 @@ namespace ots::shmkv {
                                                              skv_store_item_key_compare));
 
         if (p_cache_item == nullptr) {
-            SPDLOG_TRACE("Not found key: %.*s", key->len, key->data);
+            SPDLOG_TRACE("Not found key: {}", key->data);
             return SKV_NOT_FOUND;
         }
 
         if (p_cache_item->key_len == 0) {
-            SPDLOG_ERROR("The length of the key (%.*s) is invalid.", key->len, key->data);
+            SPDLOG_ERROR("The length of the key {} is invalid.", key->data);
             return SKV_ERROR;
         }
 
@@ -443,11 +443,10 @@ namespace ots::shmkv {
                                                              skv_store_item_key_compare));
 
         if (p_cache_item == nullptr) {
-            SPDLOG_TRACE("Add key : %.*s - %.*s", key->len, key->data, value->len, value->data);
+            SPDLOG_TRACE("Add key: {} - {}", key->data, value->data);
             ret = skv_store_item_add(ctx, ctx->store_items_snapshot + p_item_section->used, key, value);
         } else {
-            SPDLOG_TRACE("Replace key(%.*s) with (%.*s)", key->len, key->data,
-                         value->len, value->data);
+            SPDLOG_TRACE("Replace key {} with {}", key->data, value->data);
             ret = skv_store_item_replace(ctx, p_cache_item, value);
         }
 
@@ -494,7 +493,7 @@ namespace ots::shmkv {
                                                              sizeof(skv_store_item),
                                                              skv_store_item_key_compare));
         if (p_cache_item == nullptr) {
-            SPDLOG_TRACE("Not found key: %.*s", key->len, key->data);
+            SPDLOG_TRACE("Not found key: {}", key->data);
             return SKV_NOT_FOUND;
         }
 
@@ -519,10 +518,8 @@ namespace ots::shmkv {
         (void) p_item;
         p_item = ctx->store_items;
         for (i = 0; i < ctx->store_hdr->item_section.used; i++) {
-            SPDLOG_TRACE("index: %d, key: %.*s, value: %.*s", i,
-                         p_item[i].key_len,
+            SPDLOG_TRACE("index: {}, key: {}, value: {}", i,
                          (char *) ctx->store_hdr + p_item[i].key_offset,
-                         p_item[i].value_len,
                          (char *) ctx->store_hdr + p_item[i].value_offset);
         }
 
@@ -530,10 +527,8 @@ namespace ots::shmkv {
 
         p_item = ctx->store_items_snapshot;
         for (i = 0; i < ctx->store_hdr->item_section.used; i++) {
-            SPDLOG_TRACE("index: %d, key: %.*s, value: %.*s", i,
-                         p_item[i].key_len,
+            SPDLOG_TRACE("index: {}, key: {}, value: {}", i,
                          (char *) ctx->store_hdr + p_item[i].key_offset,
-                         p_item[i].value_len,
                          (char *) ctx->store_hdr + p_item[i].value_offset);
         }
 
