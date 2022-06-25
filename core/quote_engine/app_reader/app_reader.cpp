@@ -1,14 +1,14 @@
 #include "logger.h"
 #include "disruptor/disruptor.h"
-#include "ThostFtdcUserApiStruct.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
+#include "quote.h"
 
 namespace py = pybind11;
 
 int app_reader() {
     create_logger("clogs/consumer.log", "trace", false, false, false, 1, 1);
-    auto shm = disruptor::Disruptor<CThostFtdcDepthMarketDataField>(disruptor::wait::YIELDING_WAIT);
+    auto shm = disruptor::Disruptor<ots::data::Quote>(disruptor::wait::YIELDING_WAIT);
     shm.Init("test.store", 1024 * 1024 * 16);
 
     // 获取当前最新的数据
@@ -19,15 +19,15 @@ int app_reader() {
     }
     SPDLOG_DEBUG("user:{}, user_cursor:{}", user_id, user_last_cursor);
 
-    CThostFtdcDepthMarketDataField *ptr = nullptr;
+    ots::data::Quote *ptr = nullptr;
     auto ret_idx = shm.WaitFor(user_last_cursor);
     SPDLOG_DEBUG("user:{}, user_cursor:{}，ret_idx:{}", user_id, user_last_cursor, ret_idx);
     do {
         ptr = shm.GetData(user_last_cursor);
         shm.CommitRead(user_id, user_last_cursor);
         ret_idx = shm.WaitFor(++user_last_cursor);
-        SPDLOG_TRACE("user:{}, user_cursor:{}，ret_idx:{}, symbol:{}, last_price:{}", user_id, user_last_cursor, ret_idx,
-                     ptr->InstrumentID, ptr->LastPrice);
+        SPDLOG_TRACE("user:{}, user_cursor:{}，ret_idx:{}, symbol:{}, last_price:{}",
+                     user_id, user_last_cursor, ret_idx, ptr->symbol, ptr->last_price);
     } while (user_last_cursor <= ret_idx);
 
     return 0;

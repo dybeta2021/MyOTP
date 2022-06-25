@@ -25,7 +25,7 @@ find_package(pybind11)
 include_directories(ctp/include)
 link_directories(ctp/lib)
 
-pybind11_add_module(${PROJECT_NAME} app_ctp_future_quote_engine.cpp)
+pybind11_add_module(${PROJECT_NAME} app_ctp_future_quote_engine.cpp deps/kungfu/kftime.cpp)
 target_link_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ctp/lib")
 
 if (WIN32)

@@ -4,8 +4,10 @@
 #include "logger.h"
 #include "ThostFtdcMdApi.h"
 #include "create_folder.h"
+#include "deps/kungfu/kftime.h"
 #include "disruptor/disruptor.h"
 #include "encoding.h"
+#include "ots/data/quote.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 #include <cmath>
@@ -17,6 +19,7 @@
 #include <vector>
 
 namespace py = pybind11;
+const char *source_id = "ctp_future";
 
 
 class CtpQuoteApi : public CThostFtdcMdSpi {
@@ -177,7 +180,7 @@ void CtpQuoteApi::ReqUserLogout() {
 void CtpQuoteApi::SubscribeMarketData() {
     std::vector<char *> char_list;
     for (const auto &p: sub_list_) char_list.emplace_back(const_cast<char *>(p.c_str()));
-    int ret = api->SubscribeMarketData(char_list.data(), char_list.size());
+    int ret = api->SubscribeMarketData(char_list.data(), (int32_t)char_list.size());
     if (ret == 0) {
         SPDLOG_INFO("请求订阅行情......发送成功{}", ret);
     } else {
@@ -306,10 +309,74 @@ void CtpQuoteApi::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpeci
     }
 }
 
+inline int64_t nsec_from_ctp_time(const char *date, const char *update_time, int millisec = 0) {
+    static char datetime[21];
+    memset(datetime, 0, 21);
+    memcpy(datetime, date, 4);
+    datetime[4] = '-';
+    memcpy(datetime + 5, date + 4, 2);
+    datetime[7] = '-';
+    memcpy(datetime + 8, date + 6, 2);
+    datetime[10] = ' ';
+    memcpy(datetime + 11, update_time, 8);
+    int64_t nano_sec = kungfu::yijinjing::time::strptime(std::string(datetime), "%Y-%m-%d %H:%M:%S");
+    nano_sec += millisec * kungfu::yijinjing::time_unit::NANOSECONDS_PER_MILLISECOND;
+    return nano_sec;
+}
+
+// https://github.com/DuckDuckDuck0/ft/blob/96cb746b86787d3a0e9081db1b25d908220824f3/src/trader/gateway/ctp/ctp_common.h
+template<class PriceType>
+inline PriceType adjust_price(PriceType price) {
+    PriceType ret = price;
+    if (price >= std::numeric_limits<PriceType>::max() - PriceType(1e-6)) ret = PriceType(0);
+    return ret;
+}
+
 void CtpQuoteApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData) {
     counter += 1;
     if (pDepthMarketData != nullptr) {
-        SPDLOG_TRACE("OnRtnDepthMarketData, symbol:{}", pDepthMarketData->InstrumentID);
+        ots::data::Quote quote{};
+        strcpy(quote.source_id, source_id);
+        strcpy(quote.symbol, pDepthMarketData->InstrumentID);
+        quote.source_time = nsec_from_ctp_time(pDepthMarketData->ActionDay, pDepthMarketData->UpdateTime, pDepthMarketData->UpdateMillisec);
+        quote.insert_time = kungfu::yijinjing::time::now_in_nano();
+        quote.pre_open_interest = (int64_t) pDepthMarketData->PreOpenInterest;
+        quote.volume = pDepthMarketData->Volume;
+        quote.turnover = pDepthMarketData->Turnover;
+        quote.open_interest = (int64_t) pDepthMarketData->OpenInterest;
+        quote.last_price = (float) adjust_price(pDepthMarketData->LastPrice);
+        quote.pre_settlement_price = (float) adjust_price(pDepthMarketData->PreSettlementPrice);
+        quote.pre_close_price = (float) adjust_price(pDepthMarketData->PreClosePrice);
+        quote.open_price = (float) adjust_price(pDepthMarketData->OpenPrice);
+        quote.high_price = (float) adjust_price(pDepthMarketData->HighestPrice);
+        quote.low_price = (float) adjust_price(pDepthMarketData->LowestPrice);
+        quote.close_price = (float) adjust_price(pDepthMarketData->ClosePrice);
+        quote.settlement_price = (float) adjust_price(pDepthMarketData->SettlementPrice);
+        quote.upper_limit_price = (float) pDepthMarketData->UpperLimitPrice;
+        quote.lower_limit_price = (float) pDepthMarketData->LowerLimitPrice;
+        quote.bid_price[0] = (float) adjust_price(pDepthMarketData->BidPrice1);
+        quote.bid_price[1] = (float) adjust_price(pDepthMarketData->BidPrice2);
+        quote.bid_price[2] = (float) adjust_price(pDepthMarketData->BidPrice3);
+        quote.bid_price[3] = (float) adjust_price(pDepthMarketData->BidPrice4);
+        quote.bid_price[4] = (float) adjust_price(pDepthMarketData->BidPrice5);
+        quote.ask_price[0] = (float) adjust_price(pDepthMarketData->AskPrice1);
+        quote.ask_price[1] = (float) adjust_price(pDepthMarketData->AskPrice2);
+        quote.ask_price[2] = (float) adjust_price(pDepthMarketData->AskPrice3);
+        quote.ask_price[3] = (float) adjust_price(pDepthMarketData->AskPrice4);
+        quote.ask_price[4] = (float) adjust_price(pDepthMarketData->AskPrice5);
+
+        quote.bid_volume[0] = pDepthMarketData->BidVolume1;
+        quote.bid_volume[1] = pDepthMarketData->BidVolume2;
+        quote.bid_volume[2] = pDepthMarketData->BidVolume3;
+        quote.bid_volume[3] = pDepthMarketData->BidVolume4;
+        quote.bid_volume[4] = pDepthMarketData->BidVolume5;
+        quote.ask_volume[0] = pDepthMarketData->AskVolume1;
+        quote.ask_volume[1] = pDepthMarketData->AskVolume2;
+        quote.ask_volume[2] = pDepthMarketData->AskVolume3;
+        quote.ask_volume[3] = pDepthMarketData->AskVolume4;
+        quote.ask_volume[4] = pDepthMarketData->AskVolume5;
+
+        SPDLOG_TRACE("OnRtnDepthMarketData, symbol:{}, last_price:{}, ask_price:{}, {}, {}, {}, {}", quote.symbol, quote.last_price, quote.ask_price[0], quote.ask_price[1], quote.ask_price[2], quote.ask_price[3], quote.ask_price[4]);
         shm_ptr_->set_data(pDepthMarketData);
 
         if (counter > 1024) {

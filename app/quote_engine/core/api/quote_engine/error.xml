@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="gb2312"?>
 <!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by wangzhaodong (ORiON) -->
-<!DOCTYPE errors SYSTEM "error.dtd">
+<!DOCTYPE errors SYSTEM "/Users/yangdong/aliyun/MyOTP/cpp-dev/otp/quote_engine/core/api/quote_engine/error.dtd">
 <errors>
 	<error id="NONE" value="0" prompt="CTP:正确"/>
 	<error id="INVALID_DATA_SYNC_STATUS" value="1" prompt="CTP:不在已同步状态"/>
