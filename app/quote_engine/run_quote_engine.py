@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Project  : python 
 # @File     : run_service.py 
-# @Author   : yangdong
+# @Author   : 稻草人
 # @Time     : 2022/6/18 16:04
 
 from os import getcwd, sep, mkdir

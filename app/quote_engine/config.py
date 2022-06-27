@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Project  : quote_engine 
 # @File     : config.py 
-# @Author   : yangdong
+# @Author   : 稻草人
 # @Time     : 2022/6/18 17:41
 # http://122.51.136.165:50080/detail.html
 # http://122.51.136.165:50080/report/Tick%20Trading%20System%20%28TTS%297x24%BB%B7%BE%B3process%BD%BB%D2%D7.html
