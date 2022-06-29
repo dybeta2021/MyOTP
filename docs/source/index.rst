@@ -10,6 +10,7 @@ Welcome to MyOTP documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   myotp/docker
 
 
 Indices and tables

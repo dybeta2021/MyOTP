@@ -1,8 +1,8 @@
-## Docker设置
+## Docker-Dev开发环境设置
 
-### 启动容器
+### 容器
 
-```
+```shell
 docker pull ubuntu
 docker run --name iubuntu -t -i -d -p 4100:22 ubuntu
 docker exec -t -i iubuntu /bin/bash
@@ -10,7 +10,7 @@ docker exec -t -i iubuntu /bin/bash
 
 ### SSH
 
-```
+```shell
 apt-get update
 apt-get dist-upgrade -y 
 apt-get install -y sudo vim git net-tools rsync sudo iputils-ping 
@@ -30,7 +30,7 @@ passwd root
 
 ### VSCode-Web
 
-```
+```shell
 apt-get install -y curl
 
 # 首次运行生成配置文件
@@ -49,7 +49,7 @@ code-server --port 7101 --host 0.0.0.0 --auth password 1234567890
 
 ### Docker-Ubunut设置时区
 
-```
+```shell
 apt-get install tzdata
 tzselect
 ```
@@ -85,13 +85,13 @@ cat /etc/default/locale
 
 ### C++
 
-```
+```shell
 apt-get install -y build-essential cmake gdb gdbserver
 ```
 
 ### Python Env
 
-```
+```shell
 cd opt
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -100,9 +100,9 @@ bash Miniconda3-latest-Linux-x86_64.sh
 bash
 ```
 
-### Python库
+### Python Library
 
-```
+```shell
 pip install numpy
 pip install pandas
 ```
