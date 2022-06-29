@@ -2,10 +2,10 @@
 // Created by 稻草人 on 2022/6/18.
 //
 #include "ots/utils/logger.h"
-#include "ots/utils/create_folder.h"
-#include "ots/utils/encoding.h"
 #include "ots/data/quote.h"
 #include "ots/ipc/disruptor/disruptor.h"
+#include "ots/utils/create_folder.h"
+#include "ots/utils/encoding.h"
 
 #include "ThostFtdcMdApi.h"
 #include "kftime.h"
@@ -73,7 +73,9 @@ private:
 
 public:
     void set_config(const std::string &front_address);
+
     void set_universe(const std::vector<std::string> &sub_list);
+
     void set_disruptor(disruptor::Disruptor<CThostFtdcDepthMarketDataField> *ptr) { shm_ptr_ = ptr; }
 
 private:
@@ -181,7 +183,7 @@ void CtpQuoteApi::ReqUserLogout() {
 void CtpQuoteApi::SubscribeMarketData() {
     std::vector<char *> char_list;
     for (const auto &p: sub_list_) char_list.emplace_back(const_cast<char *>(p.c_str()));
-    int ret = api->SubscribeMarketData(char_list.data(), (int32_t)char_list.size());
+    int ret = api->SubscribeMarketData(char_list.data(), (int32_t) char_list.size());
     if (ret == 0) {
         SPDLOG_INFO("请求订阅行情......发送成功{}", ret);
     } else {
@@ -339,7 +341,8 @@ void CtpQuoteApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMar
         ots::data::Quote quote{};
         strcpy(quote.source_id, source_id);
         strcpy(quote.symbol, pDepthMarketData->InstrumentID);
-        quote.source_time = nsec_from_ctp_time(pDepthMarketData->ActionDay, pDepthMarketData->UpdateTime, pDepthMarketData->UpdateMillisec);
+        quote.source_time = nsec_from_ctp_time(pDepthMarketData->ActionDay, pDepthMarketData->UpdateTime,
+                                               pDepthMarketData->UpdateMillisec);
         quote.insert_time = kungfu::yijinjing::time::now_in_nano();
         quote.pre_open_interest = (int64_t) pDepthMarketData->PreOpenInterest;
         quote.volume = pDepthMarketData->Volume;
@@ -377,7 +380,9 @@ void CtpQuoteApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMar
         quote.ask_volume[3] = pDepthMarketData->AskVolume4;
         quote.ask_volume[4] = pDepthMarketData->AskVolume5;
 
-        SPDLOG_TRACE("OnRtnDepthMarketData, symbol:{}, last_price:{}, ask_price:{}, {}, {}, {}, {}", quote.symbol, quote.last_price, quote.ask_price[0], quote.ask_price[1], quote.ask_price[2], quote.ask_price[3], quote.ask_price[4]);
+        SPDLOG_TRACE("OnRtnDepthMarketData, symbol:{}, last_price:{}, ask_price:{}, {}, {}, {}, {}", quote.symbol,
+                     quote.last_price, quote.ask_price[0], quote.ask_price[1], quote.ask_price[2], quote.ask_price[3],
+                     quote.ask_price[4]);
         shm_ptr_->set_data(pDepthMarketData);
 
         if (counter > 1024) {
@@ -427,13 +432,13 @@ int run_quote_engine(
 }
 
 
-PYBIND11_MODULE(app_quote_engine_ctp_future, m) {
+PYBIND11_MODULE(app_quote_engine, m) {
     m.def("run_quote_engine",
           &run_quote_engine,
           py::call_guard<py::gil_scoped_release>(),
           py::arg("front_address"),
           py::arg("universe"),
-          py::arg("log_file") = "clogs/ctp_future_quote_engine.log",
+          py::arg("log_file") = "clogs/quote_engine.log",
           py::arg("level") = "trace",
           py::arg("path") = "test.store");
 }

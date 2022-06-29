@@ -4,6 +4,7 @@
 
 #ifndef APP_CTP_FUTURE_QUOTE_ENGINE_QUOTE_H
 #define APP_CTP_FUTURE_QUOTE_ENGINE_QUOTE_H
+#include <stdint.h>
 
 namespace ots::data {
     //行情

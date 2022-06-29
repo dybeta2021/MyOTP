@@ -1,14 +1,16 @@
 //
-// Created by 观鱼 on 2022/2/8.
+// Created by 稻草人 on 2022/2/8.
 //
+#include "ots/utils/logger.h"
 #include "ThostFtdcTraderApi.h"
 #include "ots/utils/create_folder.h"
 #include "ots/utils/encoding.h"
-#include "ots/utils/logger.h"
+#include "ots/utils/timing.h"
 #include "pybind11/pybind11.h"
 #include <unordered_map>
 
 namespace py = pybind11;
+using ots::utils::timing_ms;
 
 // replace nan
 inline double nan_to_num(const double &x) {
@@ -18,15 +20,6 @@ inline double nan_to_num(const double &x) {
     return x;
 }
 
-void timing_ms(int ms) {
-    auto us = ms * 1000;
-    auto start = std::chrono::system_clock::now();
-    while (true) {
-        auto end = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        if (duration.count() > us) break;
-    }
-}
 
 class TraderClient : public CThostFtdcTraderSpi {
 private:
@@ -313,7 +306,7 @@ py::dict get_static_data(
 }
 
 
-PYBIND11_MODULE(app_static_data_ctp_future, m) {
+PYBIND11_MODULE(app_static_data, m) {
     m.def("get_static_data",
           &get_static_data,
           "get_static_data",
