@@ -1,8 +1,8 @@
 //
 // Created by 稻草人 on 2022/6/28.
 //
+#include "broker_ctp.h"
 #include "ots/utils/logger.h"
-#include "broker.h"
 
 int main() {
     ots::broker::Config config{};
@@ -17,8 +17,8 @@ int main() {
     bool init_log = ots::utils::create_logger("clogs/broker_engine.log", "trace", true, false, false);
     SPDLOG_INFO("Broker-Engine CTP-Future.");
 
-    auto gateway = ctp_future::CtpTradeClient();
-    auto broker = broker_engine::BrokerCTP();
+    auto gateway = CtpTradeClient();
+    auto broker = BrokerCTP();
     gateway.SetBroker(&broker);
     broker.SetGateway(&gateway);
     broker.Login(config);
