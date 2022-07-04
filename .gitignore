@@ -11,3 +11,5 @@ build
 cmake-build-release
 cmake-build-debug
 *.store
+.vs
+ots-ft/win32cpp/app_broker_engine/x64
