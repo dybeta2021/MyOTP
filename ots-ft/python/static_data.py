@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Project  : data_recorder 
 # @File     : static_data.py
-# @Author   : Gavin
+# @Author   : 稻草人
 # @Time     : 2022/6/15 16:34
 # @Desc     :
 from datetime import datetime
 from os import getcwd, sep
 
-from core.api.static_data.ctp_future.app_static_data_ctp_future import get_static_data
+from core.api.static_data.ctp_future.app_static_data import get_static_data
 from dateutil.parser import parse
 from pandas import DataFrame
 

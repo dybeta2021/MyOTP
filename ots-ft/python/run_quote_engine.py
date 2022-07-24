@@ -9,7 +9,7 @@
 from pprint import pprint
 from config.config import ConfigCTPFutureMDApi
 from static_data import update_static_data
-from core.api.quote_engine.ctp_future.app_quote_engine_ctp_future import run_quote_engine
+from core.api.quote_engine.ctp_future.app_quote_engine import run_quote_engine
 
 log_file = r"clogs/quote_engine.log"
 

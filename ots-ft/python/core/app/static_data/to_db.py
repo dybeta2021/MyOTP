@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Project  : data_recorder 
 # @File     : to_db.py
-# @Author   : Gavin
+# @Author   : 稻草人
 # @Time     : 2022/6/16 14:48
 # @Desc     :
 

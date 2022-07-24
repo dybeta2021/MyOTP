@@ -219,7 +219,7 @@ py::dict get_static_data(
         std::string &app_id,
         std::string &auth_code) {
     bool init_log = ots::utils::create_logger("clogs/static_data.log", "info", false, false, false);
-    SPDLOG_INFO("CTP-Future获取股指和商品期权静态数据！");
+    SPDLOG_INFO("CTP-Future获取股指和商品静态数据！");
 
     std::string dir_path = "ctp_future_td_flow";
     ots::utils::create_folder(dir_path);

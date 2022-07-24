@@ -24,8 +24,9 @@
 
 #endif
 
-#include <iostream>
+//#include <iostream>
 #include <string>
+#include <spdlog/spdlog.h>
 
 namespace ots::utils {
 
@@ -38,13 +39,16 @@ namespace ots::utils {
             int flag = mkdir(dir_path.c_str(), S_IRWXU);//Linux创建文件夹
 #endif
             if (flag == 0) {//创建成功
-                std::cout << "Create directory successfully." << std::endl;
+                SPDLOG_INFO("Create directory successfully, {}.", dir_path);
+//                std::cout << "Create directory successfully." << std::endl;
             } else {//创建失败
-                std::cout << "Fail to create directory." << std::endl;
+                SPDLOG_ERROR("Fail to create directory, {}.", dir_path);
+//                std::cout << "Fail to create directory." << std::endl;
                 throw std::exception();
             }
         } else {
-            std::cout << "This directory already exists." << std::endl;
+            SPDLOG_WARN("This directory already exists, {}.", dir_path);
+//            std::cout << "This directory already exists." << std::endl;
         }
     }
 

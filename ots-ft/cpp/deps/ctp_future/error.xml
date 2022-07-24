@@ -123,6 +123,9 @@
 	<error id="DEL_COMB_ACTION_TOO_FAST" value="152" prompt="CTP:删除拆分组合指令：原指令需要等待30s 才能删除"/>
 	<error id="COMB_ACTION_SHORT_MONEY" value="153" prompt="CTP:拆分组合钱不足"/>
 	<error id="QK_BUSY" value="154" prompt="CTP:查询核心忙 请稍后重试"/>
+	<error id="CFMMC_NO_CONNECTION" value="155" prompt="CTP:未连接监控中心"/>
+	<error id="CLOSE_OPTION_NO_MONEY" value="156" prompt="CTP:平期权多头后资金为负（收益小于平仓手续费），只可由风控人员强平"/>
+	<error id="CANCEL_UNKNOWN_ORDER_UNSUPPORTED" value="157" prompt="CTP:该交易所不支持撤销未知单"/>
 	<!--转帐系统错误代码 -->
 	<error id="SEND_INSTITUTION_CODE_ERROR" value="1000" prompt="CTP:银期转账：发送机构代码错误"/>
 	<error id="NO_GET_PLATFORM_SN" value="1001" prompt="CTP:银期转账：取平台流水号错误"/>
@@ -168,6 +171,8 @@
   <error id="INVALID_RESERVE_OPEN_ACCOUNT" value="1041" prompt="CTP:银期转账：资金账户存在，预约开户失败"/>
   <error id="OPEN_ACCOUNT_NOT_DEFAULT_ACCOUNT" value="1042" prompt="CTP:银期转账：开户请求的银行卡号和预留的账号不同"/>
   <error id="BANK_SYSTEM_INTERNAL_ERROR" value="1043" prompt="银行系统内部错误"/>
+  <error id="OFFER_LOCALTIME_OFFSET_IS_TOO_LARGE" value="1044" prompt="银期转账：银期报盘机器时间偏移太大"/>
+  <error id="FUTURESERIAL_HAS_BEEN_PROCESSED" value="1045" prompt="银期转账：该期货流水号已经处理过"/>
 <!-- add for transfer begin -->
 	<error id="NO_VALID_BANKOFFER_AVAILABLE" value="2000" prompt="CTP:该报盘未连接到银行"/>
 	<error id="PASSWORD_MISMATCH" value="2001" prompt="CTP:资金密码错误"/>
@@ -256,5 +261,7 @@
    <error id="SCAPI_CERT_VERIFY_FAILED" value="4102" prompt="CTP:Cert Verify Failed."/>
    <error id="SCAPI_CERT_PROCESS_TIMEOUT" value="4103" prompt="CTP:Cert Process Timeout."/>
    <error id="SCAPI_LOGIN_ERROR" value="4104" prompt="CTP:Login Error."/>
+   
+
 
 </errors>

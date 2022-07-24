@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Project  : data_recorder 
 # @File     : reformat.py 
-# @Author   : Gavin
+# @Author   : 稻草人
 # @Time     : 2022/6/15 16:51
 # @Desc     :
 import re
