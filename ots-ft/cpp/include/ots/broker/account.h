@@ -17,6 +17,25 @@ namespace ots::broker {
         AccountManager() = default;
         ~AccountManager() = default;
 
+        void Show() {
+            SPDLOG_INFO("Account, account_id:{}, pre_balance:{}, balance:{}, withdraw:{}, deposit:{}, available_cash:{}, frozen_cash:{}, margin:{}, "
+                        "frozen_margin:{}, close_profit:{}, position_profit:{}, commission:{}, frozen_commission:{}, update_msg:{}",
+                        account_.account_id,
+                        account_.pre_balance,
+                        account_.balance,
+                        account_.withdraw,
+                        account_.deposit,
+                        account_.available_cash,
+                        account_.frozen_cash,
+                        account_.margin,
+                        account_.frozen_margin,
+                        account_.close_profit,
+                        account_.position_profit,
+                        account_.commission,
+                        account_.frozen_commission,
+                        account_.update_msg);
+        }
+
         void OnQuery(const ots::data::Account &st) {
             account_ = st;
 
@@ -39,7 +58,6 @@ namespace ots::broker {
         }
 
         /// Update from Position Manager
-        /// \param st
         void OnPosition(const ots::data::Account &st) {
             account_.margin = st.margin;
             account_.frozen_margin = st.frozen_margin;
@@ -69,7 +87,7 @@ namespace ots::broker {
                          account_.update_msg);
         }
 
-        ots::data::Account* GetAccount(){
+        ots::data::Account *GetAccount() {
             return &account_;
         }
     };

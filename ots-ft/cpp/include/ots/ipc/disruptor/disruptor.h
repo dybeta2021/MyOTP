@@ -39,9 +39,11 @@ namespace disruptor {
 
         bool Terminate();
 
+        void NotifyAll();
+
         bool Init(const std::string &path, const size_t &size);
 
-        void NotifyAll();
+        bool RegisterConsumer(const int &id, int64_t &index_of_customer);
 
         //producer
         int64_t ClaimIndex();
@@ -50,16 +52,15 @@ namespace disruptor {
 
         bool Commit(const int64_t &index);
 
+        // zero copy
+        T *CreateData(const int64_t &index);
 
         //consumer
-        bool RegisterConsumer(const int &id, int64_t &index_of_customer);
-
         int64_t WaitFor(const int64_t &index);
 
         T *GetData(const int64_t &index);
 
         bool CommitRead(const int &user_id, const int64_t &index);
-
 
     private:
         int64_t GetMinIndexOfConsumers();
@@ -127,7 +128,7 @@ namespace disruptor {
         total_memory_size_ = (int64_t) sizeof(ShmStoreHeader) + (int64_t) (sizeof(T) * size);
 
         // 判断文件是否存在
-        struct stat st {};
+        struct stat st{};
         if (stat(path.c_str(), &st) == 0) {
             SPDLOG_INFO("File: {} exits.", path);
             if (!shm_.GetShm(path, total_memory_size_, true)) {
@@ -232,7 +233,8 @@ namespace disruptor {
         } while (true);
 
         SPDLOG_DEBUG("nNextSeqForClaim:{}, wrapPoint:{}, buffer_size_:{}, gatingSequence:{}, next:{}, cursor:{}",
-                     nNextSeqForClaim, wrapPoint, buffer_size_, GetMinIndexOfConsumers(), shm_hdr_->next, shm_hdr_->cursor);
+                     nNextSeqForClaim, wrapPoint, buffer_size_, GetMinIndexOfConsumers(), shm_hdr_->next,
+                     shm_hdr_->cursor);
         return nNextSeqForClaim;
     }
 
@@ -319,6 +321,12 @@ namespace disruptor {
     template<typename T>
     inline void Disruptor<T>::NotifyAll() {
         wait_strategy_->NotifyAllWhenBlocking();//blocking wait strategy only.
+    }
+
+    // zero copy
+    template<typename T>
+    inline T *Disruptor<T>::CreateData(const int64_t &index) {
+        return &(*ring_buffer_[index]);
     }
 
 

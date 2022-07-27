@@ -58,28 +58,13 @@ int BrokerCTP::QueryAccount() {
     return client_->QueryAccount();
 }
 
-void BrokerCTP::OnQueryAccount(const ots::broker::Account &account) {
-    account_manager_->OnQuery(account);
-    account_manager_->OnPosition(position_manager_->GetAccount());
-}
-
 int BrokerCTP::QueryPosition() {
     return client_->QueryPosition();
 }
 
-void BrokerCTP::OnQueryPosition(const ots::data::Position &position) {
-    position_manager_->OnQuery(position);
-}
-
-void BrokerCTP::ShowPosition() {
-    position_manager_->Show();
-}
 
 int BrokerCTP::QueryParams() {
     return client_->QueryBrokerTradingParams();
-}
-
-void BrokerCTP::OnQueryParams() {
 }
 
 int BrokerCTP::InsertLimitOrder(ots::data::Order &order) {
@@ -145,7 +130,7 @@ int BrokerCTP::InsertLimitOrder(ots::data::Order &order) {
         t.ContingentCondition = THOST_FTDC_CC_Immediately;
         t.TimeCondition = THOST_FTDC_TC_GFD;
         t.VolumeCondition = THOST_FTDC_VC_AV;
-    } else if (strcmp(order.exchange_id, ots::data::exchange::SHFE) == 0 | strcmp(order.exchange_id, ots::data::exchange::INE) == 0) {
+    } else if (strcmp(order.exchange_id, ots::data::exchange::SHFE) == 0 || strcmp(order.exchange_id, ots::data::exchange::INE) == 0) {
         t.OrderPriceType = THOST_FTDC_OPT_LimitPrice;
         t.ContingentCondition = THOST_FTDC_CC_Immediately;
         t.TimeCondition = THOST_FTDC_TC_GFD;
@@ -155,13 +140,13 @@ int BrokerCTP::InsertLimitOrder(ots::data::Order &order) {
         return -1;
     }
 
-    strcpy(t.OrderRef,std::to_string(order.order_ref_num).c_str());
+    strcpy(t.OrderRef, std::to_string(order.order_ref_num).c_str());
     auto ret = client_->InsertOrder(t);
     //todo:
-    if(ret!=0){
+    if (ret != 0) {
         order.status = OrderStatus::NetworkError;
-        order.update_time =  kungfu::yijinjing::time::now_in_nano();
-        strcpy(order.error_msg, "网络错误？.");
+        order.update_time = kungfu::yijinjing::time::now_in_nano();
+        strcpy(order.status_msg, "网络错误？.");
         order_manager_->OnError(order);
     }
     return ret;
@@ -240,14 +225,31 @@ int BrokerCTP::InsertMarketOrder(ots::data::Order &order) {
         return -1;
     }
 
-    strcpy(t.OrderRef,std::to_string(order.order_ref_num).c_str());
+    strcpy(t.OrderRef, std::to_string(order.order_ref_num).c_str());
     auto ret = client_->InsertOrder(t);
     //todo:
-    if(ret!=0){
+    if (ret != 0) {
         order.status = OrderStatus::NetworkError;
-        order.update_time =  kungfu::yijinjing::time::now_in_nano();
-        strcpy(order.error_msg, "网络错误？.");
+        order.update_time = kungfu::yijinjing::time::now_in_nano();
+        strcpy(order.status_msg, "网络错误？.");
         order_manager_->OnError(order);
     }
     return ret;
+}
+
+int BrokerCTP::CancelOrder(ots::data::Order &order) {
+    using namespace ots::data;
+
+    CThostFtdcInputOrderActionField t{};
+    strcpy(t.OrderRef, std::to_string(order.order_ref_num).c_str());
+    strcpy(t.ExchangeID, order.exchange_id);
+    strcpy(t.InstrumentID, order.symbol);
+    t.OrderActionRef = order_manager_->GetCancelRef();
+    auto ret = client_->CancelOrder(t);
+
+    // todo:
+    if (ret != 0) {
+        SPDLOG_WARN("Cancel Order.");
+    }
+    return 0;
 }

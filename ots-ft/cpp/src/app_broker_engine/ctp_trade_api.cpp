@@ -278,6 +278,8 @@ void CtpTradeApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLoginField
         SPDLOG_INFO("交易日:{}", pRspUserLoginField->TradingDay);
         SPDLOG_INFO("登录时间: {}", pRspUserLoginField->LoginTime);
         SPDLOG_INFO("交易帐户: {}", pRspUserLoginField->UserID);
+        front_id_ = pRspUserLoginField->FrontID;
+        session_id_ = pRspUserLoginField->SessionID;
         status_.store(2);
     } else {
         SPDLOG_ERROR("交易账户登录失败,ErrorID={}, ErrMsg={}", pRspInfo->ErrorID, ots::utils::gbk2utf8(pRspInfo->ErrorMsg));
@@ -607,7 +609,8 @@ void CtpTradeApi::OnRspQryInvestorPosition(
 
         auto contract_multiple = ots::broker::ContractTable::get_contract(pInvestorPositionField->InstrumentID).contract_multiple;
         if (position.holding > 0) {
-            position.average_price = pInvestorPositionField->PositionCost / (double) (position.holding * contract_multiple);
+            //todo:搞清楚PositionCost这个字段是正是负
+            position.average_price = -1 * pInvestorPositionField->PositionCost / (double) (position.holding * contract_multiple);
         } else {
             position.average_price = 0.;
         }
@@ -682,8 +685,17 @@ void CtpTradeApi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrderField, 
     SPDLOG_TRACE("IPAddress:{}", pInputOrderField->IPAddress);
     SPDLOG_TRACE("CThostFtdcInputOrderField\n");
 
-    SPDLOG_ERROR("OnRspOrderInsert, nRequestID={}, ErrorID={}, ErrMsg={}.", nRequestID, pRspInfo->ErrorID,
-                 ots::utils::gbk2utf8(pRspInfo->ErrorMsg));
+    SPDLOG_WARN("OnRspOrderInsert, nRequestID={}, ErrorID={}, ErrMsg={}.", nRequestID, pRspInfo->ErrorID,
+                ots::utils::gbk2utf8(pRspInfo->ErrorMsg));
+
+    // 拒单
+    using ots::data::OrderRejected;
+    OrderRejected rejected{};
+    rejected.order_ref_num = std::stoi(pInputOrderField->OrderRef);
+    rejected.update_time = kungfu::yijinjing::time::now_in_nano();
+    rejected.status = ots::data::OrderStatus::Rejected;
+    strcpy(rejected.status_msg, ots::utils::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+    broker_->OnOrderRejected(rejected);
 }
 
 void CtpTradeApi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrderField, CThostFtdcRspInfoField *pRspInfo) {
@@ -724,10 +736,24 @@ void CtpTradeApi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrderFiel
     SPDLOG_TRACE("CThostFtdcInputOrderField\n");
 
     //TODO:记录报单数据
-    SPDLOG_ERROR("OnErrRtnOrderInsert, ErrorID={}, ErrMsg={}.", pRspInfo->ErrorID,
-                 ots::utils::gbk2utf8(pRspInfo->ErrorMsg));
+    SPDLOG_WARN("OnErrRtnOrderInsert, ErrorID={}, ErrMsg={}.", pRspInfo->ErrorID,
+                ots::utils::gbk2utf8(pRspInfo->ErrorMsg));
+    // 拒单
+    using ots::data::OrderRejected;
+    OrderRejected rejected{};
+    rejected.order_ref_num = std::stoi(pInputOrderField->OrderRef);
+    rejected.update_time = kungfu::yijinjing::time::now_in_nano();
+    rejected.status = ots::data::OrderStatus::Rejected;
+    strcpy(rejected.status_msg, ots::utils::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+    broker_->OnOrderRejected(rejected);
 }
 
+//todo: 下面两个字段如何处理
+//部分成交不在队列中
+//#define THOST_FTDC_OST_PartTradedNotQueueing '2'
+//未成交还在队列中
+//#define THOST_FTDC_OST_NoTradeQueueing '3'
+// https://www.cnblogs.com/leijiangtao/p/5379133.html
 void CtpTradeApi::OnRtnOrder(CThostFtdcOrderField *pOrderField) {
     SPDLOG_TRACE("OnRtnOrder");
     SPDLOG_TRACE("CThostFtdcOrderField");
@@ -798,6 +824,60 @@ void CtpTradeApi::OnRtnOrder(CThostFtdcOrderField *pOrderField) {
     SPDLOG_TRACE("ExchangeInstID:{}", pOrderField->ExchangeInstID);
     SPDLOG_TRACE("IPAddress:{}", pOrderField->IPAddress);
     SPDLOG_TRACE("CThostFtdcOrderField\n");
+
+    using ots::data::Order;
+    using ots::data::OrderEntrust;
+    OrderEntrust entrust{};
+    entrust.order_ref_num = std::stoi(pOrderField->OrderRef);
+    entrust.update_time = kungfu::yijinjing::time::now_in_nano();
+    strcpy(entrust.status_msg, ots::utils::gbk2utf8(pOrderField->StatusMsg).c_str());
+
+    // 报单 已受理
+    if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_Unknown) {
+        entrust.status = ots::data::OrderStatus::Submitted;
+        entrust.traded_volume = 0;
+        entrust.left_volume = pOrderField->VolumeTotal;
+        entrust.cancel_volume = 0;
+    }
+    // 已报入
+    else if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_NoTradeQueueing) {
+        entrust.status = ots::data::OrderStatus::Accepted;
+        entrust.traded_volume = 0;
+        entrust.left_volume = pOrderField->VolumeTotal;
+        entrust.cancel_volume = 0;
+    }
+    // 全部成交
+    else if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_AllTraded) {
+        entrust.status = ots::data::OrderStatus::Filled;
+        entrust.traded_volume = pOrderField->VolumeTraded;
+        entrust.left_volume = pOrderField->VolumeTotal;
+        entrust.cancel_volume = 0;
+    }
+    // 部分成交
+    else if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_PartTradedQueueing) {
+        entrust.status = ots::data::OrderStatus::PartialFilledActive;
+        entrust.traded_volume = pOrderField->VolumeTraded;
+        entrust.left_volume = pOrderField->VolumeTotal;
+        entrust.cancel_volume = 0;
+    }
+    // 全部撤单
+    else if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_Canceled) {
+        entrust.status = ots::data::OrderStatus::Cancelled;
+        entrust.traded_volume = pOrderField->VolumeTraded;
+        entrust.left_volume = 0;
+        entrust.cancel_volume = pOrderField->VolumeTotal;
+    }
+    //todo:部成部撤
+    else if (pOrderField->OrderSubmitStatus == THOST_FTDC_OSS_InsertSubmitted && pOrderField->OrderStatus == THOST_FTDC_OST_PartTradedNotQueueing) {
+        entrust.status = ots::data::OrderStatus::Cancelled;
+        entrust.traded_volume = pOrderField->VolumeTraded;
+        entrust.left_volume = 0;
+        entrust.cancel_volume = pOrderField->VolumeTotal;
+    } else {
+        SPDLOG_ERROR("OrderSubmitStatus:{}, OrderStatus:{}", pOrderField->OrderSubmitStatus, pOrderField->OrderStatus);
+    }
+
+    broker_->OnOrderEntrust(entrust);
 }
 
 void CtpTradeApi::OnRtnTrade(CThostFtdcTradeField *pTradeField) {
@@ -837,6 +917,35 @@ void CtpTradeApi::OnRtnTrade(CThostFtdcTradeField *pTradeField) {
     SPDLOG_TRACE("InstrumentID:{}", pTradeField->InstrumentID);
     SPDLOG_TRACE("ExchangeInstID:{}", pTradeField->ExchangeInstID);
     SPDLOG_TRACE("CThostFtdcTradeField\n");
+
+    ots::data::OrderTransaction transaction{};
+    transaction.order_ref_num = std::stoi(pTradeField->OrderRef);
+    strcpy(transaction.exchange_id, pTradeField->ExchangeID);
+    strcpy(transaction.account_id, pTradeField->InvestorID);
+    strcpy(transaction.symbol, pTradeField->InstrumentID);
+
+    if (pTradeField->Direction == THOST_FTDC_D_Buy) {
+        transaction.direction = ots::data::Direction::Long;
+    } else {
+        transaction.direction = ots::data::Direction::Short;
+    }
+
+    if (pTradeField->OffsetFlag == THOST_FTDC_OF_Open) {
+        transaction.offset = ots::data::Offset::Open;
+    } else if (pTradeField->OffsetFlag == THOST_FTDC_OF_Close) {
+        transaction.offset = ots::data::Offset::Close;
+    } else if (pTradeField->OffsetFlag == THOST_FTDC_OF_CloseToday) {
+        transaction.offset = ots::data::Offset::CloseToday;
+    } else if (pTradeField->OffsetFlag == THOST_FTDC_OF_CloseYesterday) {
+        transaction.offset = ots::data::Offset::CloseYesterday;
+    } else {
+        SPDLOG_ERROR("Error OffsetFlag: {}.", pTradeField->OffsetFlag);
+    }
+
+    transaction.update_time = kungfu::yijinjing::time::now_in_nano();
+    transaction.traded_volume = pTradeField->Volume;
+    transaction.traded_price = pTradeField->Price;
+    broker_->OnOrderTrade(transaction);
 }
 
 void CtpTradeApi::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderActionField, CThostFtdcRspInfoField *pRspInfo,
@@ -915,4 +1024,56 @@ void CtpTradeApi::OnRspQryBrokerTradingParams(CThostFtdcBrokerTradingParamsField
     if (bIsLast) {
         signal_query_trading_params_->post();
     }
+}
+
+//撤单
+int CtpTradeApi::CancelOrder(CThostFtdcInputOrderActionField &t) {
+    using namespace ots::data;
+    t.ActionFlag = THOST_FTDC_AF_Delete;
+    t.RequestID = ++request_id;
+    strcpy(t.BrokerID, config_.broker_id.c_str());
+    strcpy(t.InvestorID, config_.account_id.c_str());
+    strcpy(t.UserID, config_.account_id.c_str());
+    t.FrontID = front_id_;
+    t.SessionID = session_id_;
+
+    auto ret = ptr->ReqOrderAction(&t, request_id);
+    return ret;
+}
+
+// 撤单响应
+void CtpTradeApi::OnErrRtnOrderAction(CThostFtdcOrderActionField *pOrderActionField, CThostFtdcRspInfoField *pRspInfo) {
+    SPDLOG_TRACE("CThostFtdcOrderActionField");
+    SPDLOG_TRACE("BrokerID:{}", pOrderActionField->BrokerID);
+    SPDLOG_TRACE("InvestorID:{}", pOrderActionField->InvestorID);
+    SPDLOG_TRACE("OrderActionRef:{}", pOrderActionField->OrderActionRef);
+    SPDLOG_TRACE("OrderRef:{}", pOrderActionField->OrderRef);
+    SPDLOG_TRACE("RequestID:{}", pOrderActionField->RequestID);
+    SPDLOG_TRACE("FrontID:{}", pOrderActionField->FrontID);
+    SPDLOG_TRACE("SessionID:{}", pOrderActionField->SessionID);
+    SPDLOG_TRACE("ExchangeID:{}", pOrderActionField->ExchangeID);
+    SPDLOG_TRACE("OrderSysID:{}", pOrderActionField->OrderSysID);
+    SPDLOG_TRACE("ActionFlag:{}", pOrderActionField->ActionFlag);
+    SPDLOG_TRACE("LimitPrice:{}", pOrderActionField->LimitPrice);
+    SPDLOG_TRACE("VolumeChange:{}", pOrderActionField->VolumeChange);
+    SPDLOG_TRACE("ActionDate:{}", pOrderActionField->ActionDate);
+    SPDLOG_TRACE("ActionTime:{}", pOrderActionField->ActionTime);
+    SPDLOG_TRACE("TraderID:{}", pOrderActionField->TraderID);
+    SPDLOG_TRACE("InstallID:{}", pOrderActionField->InstallID);
+    SPDLOG_TRACE("OrderLocalID:{}", pOrderActionField->OrderLocalID);
+    SPDLOG_TRACE("ActionLocalID:{}", pOrderActionField->ActionLocalID);
+    SPDLOG_TRACE("ParticipantID:{}", pOrderActionField->ParticipantID);
+    SPDLOG_TRACE("ClientID:{}", pOrderActionField->ClientID);
+    SPDLOG_TRACE("BusinessUnit:{}", pOrderActionField->BusinessUnit);
+    SPDLOG_TRACE("OrderActionStatus:{}", pOrderActionField->OrderActionStatus);
+    SPDLOG_TRACE("UserID:{}", pOrderActionField->UserID);
+    SPDLOG_TRACE("StatusMsg:{}", pOrderActionField->StatusMsg);
+    SPDLOG_TRACE("reserve1:{}", pOrderActionField->reserve1);
+    SPDLOG_TRACE("BranchID:{}", pOrderActionField->BranchID);
+    SPDLOG_TRACE("InvestUnitID:{}", pOrderActionField->InvestUnitID);
+    SPDLOG_TRACE("reserve2:{}", pOrderActionField->reserve2);
+    SPDLOG_TRACE("MacAddress:{}", pOrderActionField->MacAddress);
+    SPDLOG_TRACE("InstrumentID:{}", pOrderActionField->InstrumentID);
+    SPDLOG_TRACE("IPAddress:{}", pOrderActionField->IPAddress);
+    SPDLOG_TRACE("CThostFtdcOrderActionField");
 }

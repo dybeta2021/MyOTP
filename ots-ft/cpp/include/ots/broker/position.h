@@ -4,12 +4,13 @@
 
 #ifndef OTS_FT_POSITION_H
 #define OTS_FT_POSITION_H
+#include "kftime.h"
 #include "magic_enum.hpp"
+#include "ots/broker/contract.h"
 #include "ots/data.h"
 #include "spdlog/spdlog.h"
 #include <iostream>
 #include <string>
-#include "kftime.h"
 #include <unordered_map>
 
 namespace ots::broker {
@@ -20,6 +21,199 @@ namespace ots::broker {
     private:
         std::unordered_map<std::string, Position> long_pos_;
         std::unordered_map<std::string, Position> short_pos_;
+
+    private:
+        static void OnTradeLongOpen(Position &pos, const OrderTransaction &st) {
+            pos.last_price = st.traded_price;
+            pos.position_profit = (st.traded_price - pos.average_price) * (double)pos.holding;
+            pos.average_price = (pos.average_price * (double)pos.holding + st.traded_price * st.traded_volume) / (double)(pos.holding + st.traded_volume);
+            pos.holding += st.traded_volume;
+            pos.today_holding += st.traded_volume;
+            // todo:手续费
+//            pos.commission += st.commission;
+            Contract contract = ContractTable::get_contract(pos.symbol);
+            pos.margin = pos.last_price * (double )pos.holding * contract.short_margin_ratio * contract.contract_multiple;
+            pos.update_time = st.update_time;
+            strcpy(pos.update_msg, "LongOpen");
+        }
+
+        static void OnTradeShortOpen(Position &pos, const OrderTransaction &st) {
+            pos.last_price = st.traded_price;
+            pos.position_profit = (pos.average_price - pos.last_price) * (double)pos.holding;
+            pos.average_price = (pos.average_price * (double)pos.holding + st.traded_price * st.traded_volume) / (double)(pos.holding + st.traded_volume);
+            pos.holding += st.traded_volume;
+            pos.today_holding += st.traded_volume;
+            // todo:手续费
+//            pos.commission += st.commission;
+            Contract contract = ContractTable::get_contract(pos.symbol);
+            pos.margin = pos.last_price * (double )pos.holding * contract.short_margin_ratio * contract.contract_multiple;
+            pos.update_time = st.update_time;
+            strcpy(pos.update_msg, "ShortOpen");
+        }
+
+        static void OnTradeLongClose(Position &pos, const OrderTransaction &st) {
+            pos.last_price = st.traded_price;
+            pos.close_profit += (pos.average_price - st.traded_price) * st.traded_volume;
+            pos.position_profit = (pos.average_price - st.traded_price) * (double)(pos.holding - st.traded_volume);
+            if (pos.holding > st.traded_volume) {
+                pos.average_price = (pos.average_price * (double)pos.holding - st.traded_price * st.traded_volume) / (double)(pos.holding - st.traded_volume);
+            } else {
+                pos.average_price = 0;
+            }
+            pos.holding -= st.traded_volume;
+
+            // 上期所
+            if (strcmp(st.exchange_id, ots::data::exchange::SHFE) == 0) {
+                if (st.offset == Offset::CloseToday) {
+                    pos.today_holding -= st.traded_volume;
+                } else {
+                    pos.yesterday_holding -= st.traded_volume;
+                }
+            }
+            // 上海能源中心
+            else if (strcmp(st.exchange_id, ots::data::exchange::INE) == 0) {
+                if (st.offset == Offset::CloseToday) {
+                    pos.today_holding -= st.traded_volume;
+                } else {
+                    pos.yesterday_holding -= st.traded_volume;
+                }
+            }
+            // 大商所
+            else if (strcmp(st.exchange_id, ots::data::exchange::DCE) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            // 郑商所
+            else if (strcmp(st.exchange_id, ots::data::exchange::CZCE) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            // 中金所
+            else if (strcmp(st.exchange_id, ots::data::exchange::CFFEX) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            else{
+                SPDLOG_CRITICAL("交易所类型:{}.", st.exchange_id);
+                return ;
+            }
+
+            // todo:手续费
+//            pos.commission += st.commission;
+            Contract contract = ContractTable::get_contract(pos.symbol);
+            pos.margin = pos.last_price * (double )pos.holding * contract.short_margin_ratio * contract.contract_multiple;
+            pos.update_time = st.update_time;
+            strcpy(pos.update_msg, "LongClose");
+        }
+
+        static void OnTradeShortClose(Position &pos, const OrderTransaction &st) {
+            pos.last_price = st.traded_price;
+            pos.close_profit += (st.traded_price - pos.average_price) * st.traded_volume;
+            pos.position_profit = (st.traded_price - pos.average_price) * (double)(pos.holding - st.traded_volume);
+            if (pos.holding > st.traded_volume) {
+                pos.average_price = (pos.average_price * (double)pos.holding - st.traded_price * st.traded_volume) / (double)(pos.holding - st.traded_volume);
+            } else {
+                pos.average_price = 0;
+            }
+            pos.holding -= st.traded_volume;
+
+            // 上期所
+            if (strcmp(st.exchange_id, ots::data::exchange::SHFE) == 0) {
+                if (st.offset == Offset::CloseToday) {
+                    pos.today_holding -= st.traded_volume;
+                } else {
+                    pos.yesterday_holding -= st.traded_volume;
+                }
+            }
+            // 上海能源中心
+            else if (strcmp(st.exchange_id, ots::data::exchange::INE) == 0) {
+                if (st.offset == Offset::CloseToday) {
+                    pos.today_holding -= st.traded_volume;
+                } else {
+                    pos.yesterday_holding -= st.traded_volume;
+                }
+            }
+            // 大商所
+            else if (strcmp(st.exchange_id, ots::data::exchange::DCE) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            // 郑商所
+            else if (strcmp(st.exchange_id, ots::data::exchange::CZCE) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            // 中金所
+            else if (strcmp(st.exchange_id, ots::data::exchange::CFFEX) == 0) {
+                if(pos.yesterday_holding > 0){
+                    if (pos.yesterday_holding >= st.traded_volume){
+                        pos.yesterday_holding -= st.traded_volume;
+                    }else{
+                        auto left_num = st.traded_volume - pos.yesterday_holding;
+                        pos.yesterday_holding = 0;
+                        pos.today_holding -= left_num;
+                    }
+                }else{
+                    pos.today_holding -= st.traded_volume;
+                }
+            }
+            else{
+                SPDLOG_CRITICAL("交易所类型:{}.", st.exchange_id);
+                return ;
+            }
+
+            // todo:手续费
+//            pos.commission += st.commission;
+            Contract contract = ContractTable::get_contract(pos.symbol);
+            pos.margin = pos.last_price * (double )pos.holding * contract.short_margin_ratio * contract.contract_multiple;
+            pos.update_time = st.update_time;
+            strcpy(pos.update_msg, "LongClose");
+        }
 
     public:
         PositionManager() = default;
@@ -58,8 +252,27 @@ namespace ots::broker {
             strcpy(pos.update_msg, st.update_msg);
         }
 
+        void OnTrade(const OrderTransaction &st) {
+            auto &pos = st.direction == Direction::Long ? long_pos_[st.symbol] : short_pos_[st.symbol];
+            if (strcmp(pos.account_id, st.account_id) != 0) {
+                SPDLOG_ERROR("MyOTS暂不支持多账户，{}:{}.", pos.account_id, st.account_id);
+            }
+
+            if (st.direction == Direction::Long && st.offset == Offset::Open) {
+                OnTradeLongOpen(pos, st);
+            } else if (st.direction == Direction::Short && st.offset == Offset::Open) {
+                OnTradeShortOpen(pos, st);
+            } else if (st.direction == Direction::Long && st.offset != Offset::Open) {
+                OnTradeLongClose(pos, st);
+            } else if (st.direction == Direction::Short && st.offset != Offset::Open) {
+                OnTradeShortClose(pos, st);
+            } else {
+                SPDLOG_ERROR("ERROR.");
+            }
+        }
+
         void Show() {
-            for (auto iter: long_pos_) {
+            for (const auto& iter: long_pos_) {
                 if (iter.second.holding != 0) {
                     SPDLOG_INFO("account:{}, date:{}, symbol:{}, direction:{}, holding:{}, today_holding:{}, yesterday_holding:{}, "
                                 "frozen_holding:{}, frozen_margin:{}, margin:{}, last_price:{}, settlement_price:{}, pre_settlement_price:{},"
@@ -86,7 +299,7 @@ namespace ots::broker {
                 }
             }
 
-            for (auto iter: short_pos_) {
+            for (const auto& iter: short_pos_) {
                 if (iter.second.holding != 0) {
                     SPDLOG_INFO("account:{}, date:{}, symbol:{}, direction:{}, holding:{}, today_holding:{}, yesterday_holding:{}, "
                                 "frozen_holding:{}, frozen_margin:{}, margin:{}, last_price:{}, settlement_price:{}, pre_settlement_price:{},"
@@ -114,7 +327,7 @@ namespace ots::broker {
             }
         }
 
-        ots::data::Account GetAccount(){
+        ots::data::Account GetAccount() {
             double long_margin = 0;
             double long_frozen_margin = 0;
             double short_margin = 0;
@@ -127,7 +340,7 @@ namespace ots::broker {
             double short_commission = 0;
             double long_frozen_commission = 0;
             double short_frozen_commission = 0;
-            for (auto iter: long_pos_) {
+            for (const auto& iter: long_pos_) {
                 if (iter.second.holding != 0) {
                     long_margin += iter.second.margin;
                     long_frozen_margin += iter.second.frozen_margin;
@@ -137,10 +350,10 @@ namespace ots::broker {
                     long_frozen_commission += iter.second.frozen_commission;
                 }
             }
-            for (auto iter: short_pos_) {
+            for (const auto& iter: short_pos_) {
                 if (iter.second.holding != 0) {
-                    short_margin+= iter.second.margin;
-                    short_frozen_margin+= iter.second.frozen_margin;
+                    short_margin += iter.second.margin;
+                    short_frozen_margin += iter.second.frozen_margin;
                     short_close_profit += iter.second.close_profit;
                     short_position_profit += iter.second.position_profit;
                     short_commission += iter.second.commission;

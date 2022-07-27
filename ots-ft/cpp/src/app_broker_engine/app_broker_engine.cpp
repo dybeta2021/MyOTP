@@ -18,8 +18,7 @@ int main() {
     // static-data
     auto contract_vector = ots::sql::get_commodity_future_contract();
     ots::broker::ContractTable::Init(contract_vector);
-    //todo:打开
-//    ots::broker::ContractTable::ShowTable();
+    ots::broker::ContractTable::ShowTable();
 
     // login
     ots::data::Config config{};
@@ -101,38 +100,169 @@ int main() {
 
     auto order_manager = ots::broker::OrderManager();
     broker.SetOrderManager(order_manager);
-    // 下单测试 市价单
-    {
-        ots::data::Order order{};
-        strcpy(order.agent_id, config.agent_id.c_str());
-        strcpy(order.account_id, config.account_id.c_str());
-        strcpy(order.exchange_id, ots::data::exchange::SHFE);
-        strcpy(order.symbol, "bu2208");
-        order.direction = ots::data::Direction::Long;
-        order.offset = ots::data::Offset::Open;
-        order.hedge_flag = ots::data::HedgeFlag::Speculation;
-        order.volume = 100;
-        order.type = ots::data::OrderType::Market;
-        broker.InsertMarketOrder(order);
-    }
+    //todo：查询委托功能
+    SPDLOG_INFO("MyOTS设置委托管理模块.");
+    SPDLOG_INFO("Broker初始化完成.");
 
-    // 下单测试 限价单
-    {
-        ots::data::Order order{};
-        strcpy(order.agent_id, config.agent_id.c_str());
-        strcpy(order.account_id, config.account_id.c_str());
-        strcpy(order.exchange_id, ots::data::exchange::SHFE);
-        strcpy(order.symbol, "bu2208");
-        order.direction = ots::data::Direction::Short;
-        order.offset = ots::data::Offset::Open;
-        order.hedge_flag = ots::data::HedgeFlag::Speculation;
-        order.volume = 100;
-        order.type = ots::data::OrderType::Limit;
-        auto contract = ots::broker::ContractTable::get_contract(order.symbol);
-        order.price = contract.price_min_limit;
-        broker.InsertLimitOrder(order);
-    }
+    position_manager.Show();
+    order_manager.Show();
+    account_manager.Show();
+    SPDLOG_INFO("Broker等待Agent指令.");
+    ots::utils::timing_ms(500000);
 
-    SPDLOG_INFO("Broker初始化成功.");
-    ots::utils::timing_ms(5000000);
+
+
+
+//     // 下单测试 市价单
+//     {
+//         ots::data::Order order{};
+//         strcpy(order.agent_id, config.agent_id.c_str());
+//         strcpy(order.account_id, config.account_id.c_str());
+//         strcpy(order.exchange_id, ots::data::exchange::SHFE);
+//         strcpy(order.symbol, "bu2208");
+//         order.direction = ots::data::Direction::Long;
+//         order.offset = ots::data::Offset::Open;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Market;
+//         broker.InsertMarketOrder(order);
+//     }
+//
+//     // 下单测试 限价单 大商所
+//     {
+//         //开仓
+//         ots::data::Order order{};
+//         strcpy(order.agent_id, config.agent_id.c_str());
+//         strcpy(order.account_id, config.account_id.c_str());
+//         strcpy(order.exchange_id, ots::data::exchange::DCE);
+//         strcpy(order.symbol, "i2209");
+//         order.direction = ots::data::Direction::Short;
+//         order.offset = ots::data::Offset::Open;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         auto contract = ots::broker::ContractTable::get_contract(order.symbol);
+//         order.price = contract.price_min_limit;
+//         broker.InsertLimitOrder(order);
+//
+//         //平仓
+//         order.direction = ots::data::Direction::Long;
+//         order.offset = ots::data::Offset::Close;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         order.price = contract.price_max_limit;
+//         broker.InsertLimitOrder(order);
+//     }
+//
+//     // 下单测试 限价单 上期所
+//     {
+//         //开仓
+//         ots::data::Order order{};
+//         strcpy(order.agent_id, config.agent_id.c_str());
+//         strcpy(order.account_id, config.account_id.c_str());
+//         strcpy(order.exchange_id, ots::data::exchange::SHFE);
+//         strcpy(order.symbol, "bu2208");
+//         order.direction = ots::data::Direction::Short;
+//         order.offset = ots::data::Offset::Open;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         auto contract = ots::broker::ContractTable::get_contract(order.symbol);
+//         order.price = contract.price_min_limit;
+//         broker.InsertLimitOrder(order);
+//
+//         //平仓
+//         order.direction = ots::data::Direction::Long;
+//         order.offset = ots::data::Offset::CloseToday;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         order.price = contract.price_max_limit;
+//         broker.InsertLimitOrder(order);
+//     }
+//
+//     // 下单测试 限价单 上期所
+//     {
+//         //开仓
+//         ots::data::Order order{};
+//         strcpy(order.agent_id, config.agent_id.c_str());
+//         strcpy(order.account_id, config.account_id.c_str());
+//         strcpy(order.exchange_id, ots::data::exchange::SHFE);
+//         strcpy(order.symbol, "bu2208");
+//         order.direction = ots::data::Direction::Short;
+//         order.offset = ots::data::Offset::Open;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         auto contract = ots::broker::ContractTable::get_contract(order.symbol);
+//         order.price = contract.price_min_limit;
+//         broker.InsertLimitOrder(order);
+//
+//         //平仓
+//         order.direction = ots::data::Direction::Long;
+//         order.offset = ots::data::Offset::Close;
+//         order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//         order.volume = 1;
+//         order.type = ots::data::OrderType::Limit;
+//         order.price = contract.price_max_limit;
+//         broker.InsertLimitOrder(order);
+//     }
+//
+//    // 下单测试 限价单 郑商所
+//    {
+//        //开仓
+//        ots::data::Order order{};
+//        strcpy(order.agent_id, config.agent_id.c_str());
+//        strcpy(order.account_id, config.account_id.c_str());
+//        strcpy(order.exchange_id, ots::data::exchange::CZCE);
+//        strcpy(order.symbol, "TA301");
+//        order.direction = ots::data::Direction::Short;
+//        order.offset = ots::data::Offset::Open;
+//        order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//        order.volume = 1;
+//        order.type = ots::data::OrderType::Limit;
+//        auto contract = ots::broker::ContractTable::get_contract(order.symbol);
+//        order.price = contract.price_min_limit;
+//        broker.InsertLimitOrder(order);
+//
+//        //平仓
+//        order.direction = ots::data::Direction::Long;
+//        order.offset = ots::data::Offset::Close;
+//        order.hedge_flag = ots::data::HedgeFlag::Speculation;
+//        order.volume = 1;
+//        order.type = ots::data::OrderType::Limit;
+//        order.price = contract.price_max_limit;
+//        broker.InsertLimitOrder(order);
+//    }
+
+    //    //撤单测试
+    //    {
+    //        ots::data::Order order{};
+    //        strcpy(order.agent_id, config.agent_id.c_str());
+    //        strcpy(order.account_id, config.account_id.c_str());
+    //        strcpy(order.exchange_id, ots::data::exchange::SHFE);
+    //        strcpy(order.symbol, "bu2208");
+    //        order.direction = ots::data::Direction::Long;
+    //        order.offset = ots::data::Offset::Open;
+    //        order.hedge_flag = ots::data::HedgeFlag::Speculation;
+    //        order.volume = 1;
+    //        order.type = ots::data::OrderType::Limit;
+    //        auto contract = ots::broker::ContractTable::get_contract(order.symbol);
+    //        order.price = contract.price_max_limit;
+    //        broker.InsertLimitOrder(order);
+    //    }
+    //    {
+    //        ots::data::Order order{};
+    //        order.order_ref_num = 0;
+    //        strcpy(order.exchange_id, ots::data::exchange::SHFE);
+    //        strcpy(order.symbol, "bu2208");
+    //        broker.CancelOrder(order);
+    //    }
+//
+//
+//    ots::utils::timing_ms(500000);
+//    order_manager.ShowOrder();
+    ots::utils::timing_ms(500000);
+//    position_manager.Show();
 }

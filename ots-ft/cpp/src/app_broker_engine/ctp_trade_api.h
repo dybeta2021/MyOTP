@@ -18,6 +18,11 @@ class BrokerCTP;
 class CtpTradeApi : public CThostFtdcTraderSpi {
 private:
     CThostFtdcTraderApi *ptr{};
+
+    // 前置编号、会话编号
+    int front_id_ = -1;
+    int session_id_ = -1;
+
     // TODO:是否需要使用atomic？
     int request_id = -1;
     BrokerCTP *broker_ = nullptr;
@@ -25,7 +30,6 @@ private:
 
     // 登录状态，-1:未登录, 0:Init, 1:监管认证，2:Login，3:确认结算单
     std::atomic<int> status_ = -1;
-
     nut::Semaphore *signal_init_ = nullptr;
     nut::Semaphore *signal_authenticate_ = nullptr;
     nut::Semaphore *signal_login_ = nullptr;
@@ -69,6 +73,9 @@ public:
     // 下单
     int InsertOrder(CThostFtdcInputOrderField &t);
 
+    // 撤单
+    int CancelOrder(CThostFtdcInputOrderActionField &t);
+
 public:
     ///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
     void OnFrontConnected() override;
@@ -93,11 +100,10 @@ public:
                            bool bIsLast) override;
 
     ///登录请求响应
-    void
-    OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLoginField,
-                   CThostFtdcRspInfoField *pRspInfo,
-                   int nRequestID,
-                   bool bIsLast) override;
+    void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLoginField,
+                        CThostFtdcRspInfoField *pRspInfo,
+                        int nRequestID,
+                        bool bIsLast) override;
 
 
     ///请求查询结算信息确认响应
@@ -119,6 +125,10 @@ public:
                          int nRequestID,
                          bool bIsLast) override;
 
+    // OnRspOrderInsert是当前报单者收到的回调，OnErrRtnOrderInsert是该客户名下所有的链接都会收到的回调。
+    // 例如，用户通过CTP的API同时开了两个链接A和B分别连到了CTP后台（这两个链接称之为两个会话：session），
+    // 他通过Session A报单，这笔订单因为某原因被CTP拒单。这时他的报单Session A会收到OnRspOrderInsert回调；
+    // 他名下另一个连着的Session B会收到OnErrRtnOrderInsert回调。
     ///报单录入请求响应
     void OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrderField, CThostFtdcRspInfoField *pRspInfo, int nRequestID,
                           bool bIsLast) override;
@@ -126,9 +136,12 @@ public:
     ///报单录入错误回报
     void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrderField, CThostFtdcRspInfoField *pRspInfo) override;
 
-    ///报单操作请求响应
+    ///撤单错误响应
     void OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderActionField, CThostFtdcRspInfoField *pRspInfo,
                           int nRequestID, bool bIsLast) override;
+
+    ///撤单错误响应
+    void OnErrRtnOrderAction(CThostFtdcOrderActionField *pOrderActionField, CThostFtdcRspInfoField *pRspInfo) override;
 
     ///报单通知
     void OnRtnOrder(CThostFtdcOrderField *pOrderField) override;
@@ -137,11 +150,10 @@ public:
     void OnRtnTrade(CThostFtdcTradeField *pTradeField) override;
 
     ///请求查询投资者持仓响应
-    void
-    OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPositionField,
-                             CThostFtdcRspInfoField *pRspInfo,
-                             int nRequestID,
-                             bool bIsLast) override;
+    void OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPositionField,
+                                  CThostFtdcRspInfoField *pRspInfo,
+                                  int nRequestID,
+                                  bool bIsLast) override;
 
     ///请求查询资金账户响应
     void OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccountField,

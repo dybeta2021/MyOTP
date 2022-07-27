@@ -87,47 +87,71 @@ namespace ots::data {
     enum class OrderStatus {
         Insert = 1,                // 请求报单
         Rejected = 2,              //拒单
-        Submitted = 3,             //柜台已接收
-        Accepted = 4,              //柜台已受理
+        Submitted = 3,             //柜台已受理
+        Accepted = 4,              //柜台已报入
         Cancelled = 5,             //撤单
         Filled = 6,                //全部成交
         PartialFilledNotActive = 7,//部成部撤
         PartialFilledActive = 8,   //部分成交
-        NetworkError = 9, //网络错误
-        Error = 10, //未定义错误
+        NetworkError = 9,          //网络错误
+        Error = 10,                //未定义错误
         Unknown = 11
     };
 
     struct Order {
-        size_t order_ref_num;//订单序号
-        char trading_day[32]; //真实日期
+        int order_ref_num;   //订单序号
+        char trading_day[32];//真实日期
         int64_t insert_time; //更新时间
         int64_t update_time; //更新时间
         char agent_id[32];
         char account_id[32];
-        char exchange_id[32]; //交易所
-        char symbol[32]; //合约ID
+        char exchange_id[32];             //交易所
+        char symbol[32];                  //合约ID
         ots::define::Direction direction; // 多空
         ots::define::Offset offset;       //开平
         ots::define::HedgeFlag hedge_flag;// 投机套保
-        int volume; //委托量
-        int traded_volume; //成交数量
-        int left_volume; //未成交数量
-        int cancel_volume; //撤单数量
-        float price; //委托价格
-        OrderType type; //订单价格类型（市价、限价、本方最优）
+        int volume;                       //委托量
+        int traded_volume;                //成交数量
+        int left_volume;                  //未成交数量
+        int cancel_volume;                //撤单数量
+        // todo：使用float？
+        double price;  //委托价格
+        OrderType type;//订单价格类型（市价、限价、本方最优）
         OrderStatus status;
-        int error_code; //错误代码
-        char error_msg[64]; //错误信息
+        char status_msg[128];
     };
 
-    //逐笔委托
-    struct Entrust {
-        size_t order_ref_num;//订单序号
-        int64_t update_time; //更新时间
-        int traded_volume;   //成交数量
-        int left_volume;     //未成交数量
-        int cancel_volume;   //撤单数量
+    //todo:
+    struct OrderRejected {
+        int order_ref_num;  //订单序号
+        int64_t update_time;//更新时间
+        OrderStatus status;
+        char status_msg[128];
+    };
+
+    //委托回报 Order
+    struct OrderEntrust {
+        int order_ref_num;  //订单序号
+        int64_t update_time;//更新时间
+        OrderStatus status;
+        char status_msg[128];
+        int traded_volume;//成交数量
+        int left_volume;  //未成交数量
+        int cancel_volume;//撤单数量
+    };
+
+    //Transaction 逐笔成交
+    struct OrderTransaction {
+        int order_ref_num;//订单序号
+        char exchange_id[32];
+        char account_id[32];
+        char symbol[32];           //合约编码
+        Direction direction;       //持仓方向
+        ots::define::Offset offset;//开平
+        int64_t update_time;//更新时间
+        int traded_volume;  //成交数量
+        double traded_price;//成交价格
+        double commission;//手续费
     };
 
     //持仓信息

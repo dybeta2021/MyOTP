@@ -29,26 +29,14 @@ public:
     int Logout() override;
 
     int QueryParams() override;
-    void OnQueryParams() override;
 
-    int QueryAccount() override ;
-    void OnQueryAccount(const ots::data::Account &account) override;
+    int QueryAccount() override;
 
     int QueryPosition() override;
-    void OnQueryPosition(const ots::data::Position &position) override;
-    void ShowPosition() override;
 
     int InsertLimitOrder(ots::data::Order &order) override;
     int InsertMarketOrder(ots::data::Order &order) override;
-
-//    // 成交响应， 持仓模块
-//    void OnTradeLongOpen(const ots::data::Position &position) override;
-//    void OnTradeShortOpen(const ots::data::Position &position) override;
-//    void OnTradeLongClose(const ots::data::Position &position) override;
-//    void OnTradeShortClose(const ots::data::Position &position) override;
-    //
-    //    // 下单
-    //    int InsertOrder(const ots::broker::order::Order &order) override;
+    int CancelOrder(ots::data::Order &order) override;
 };
 
 

@@ -25,16 +25,54 @@ namespace ots::broker {
         Broker() = default;
         ~Broker() = default;
 
-        void SetAccountManager(AccountManager &account_manager){
+        void SetAccountManager(AccountManager &account_manager) {
             account_manager_ = &account_manager;
         }
 
-        void SetPositionManager(PositionManager &position_manager){
+        void SetPositionManager(PositionManager &position_manager) {
             position_manager_ = &position_manager;
         }
 
-        void SetOrderManager(OrderManager &order_manager){
+        void SetOrderManager(OrderManager &order_manager) {
             order_manager_ = &order_manager;
+        }
+
+        // 查询broker一些柜台参数设置
+        void OnQueryParams(){};
+
+        // 查询资金账户回报
+        void OnQueryAccount(const ots::broker::Account &account) {
+            account_manager_->OnQuery(account);
+            account_manager_->OnPosition(position_manager_->GetAccount());
+        }
+
+        // 查询持仓回报
+        void OnQueryPosition(const ots::data::Position &position) {
+            position_manager_->OnQuery(position);
+        }
+
+        // 显示持仓
+        void ShowPosition() {
+            position_manager_->Show();
+        }
+
+        // 订单回报
+        void OnOrderEntrust(const OrderEntrust &entrust) {
+            order_manager_->OnEntrust(entrust);
+        };
+
+        void OnOrderRejected(const OrderRejected &rejected) {
+            order_manager_->OnRejected(rejected);
+        }
+
+        // 成交回报
+        void OnOrderTrade(const OrderTransaction &transaction) {
+            position_manager_->OnTrade(transaction);
+        };
+
+        // 初始查询订单回报
+        void OnOrderQuery(const Order &order) {
+            order_manager_->OnQuery(order);
         }
 
     public:
@@ -43,30 +81,19 @@ namespace ots::broker {
 
         // 查询broker参数设置
         virtual int QueryParams() = 0;
-        virtual void OnQueryParams() = 0;
 
         // 查询账户资金
         virtual int QueryAccount() = 0;
-        virtual void OnQueryAccount(const Account &account) = 0;
 
         // 请求查询持仓
         virtual int QueryPosition() = 0;
-        virtual void OnQueryPosition(const Position &position) = 0;
-        virtual void ShowPosition() = 0;
 
         // 限价单，当日有效
         virtual int InsertLimitOrder(Order &order) = 0;
-
         // 市价单，当日有效
         virtual int InsertMarketOrder(Order &order) = 0;
-
-        //        // 成交响应， 持仓模块
-        //        virtual void OnTradeLongOpen(const Position &position) = 0;
-        //        virtual void OnTradeShortOpen(const Position &position) = 0;
-        //        virtual void OnTradeLongClose(const Position &position) = 0;
-        //        virtual void OnTradeShortClose(const Position &position) = 0;
-
-        //        virtual int InsertOrder(const order::Order &order) = 0;
+        // 撤单
+        virtual int CancelOrder(Order &order) = 0;
     };
 }// namespace ots::broker
 
