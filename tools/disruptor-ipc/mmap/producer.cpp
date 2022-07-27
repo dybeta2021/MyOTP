@@ -19,10 +19,11 @@ void test_producer(){
     SPDLOG_INFO("insert rows: {}", 1024*1024*16);
     SPDLOG_INFO("start!");
     for (int i=0; i<1024*1024*16; i++){
-        TestBufferData test{};
-        test.th = i+100;
-        test.data = fmt::format("data:{}", i);
-        shm.set_data(&test);
+        auto idx = shm.ClaimIndex();
+        auto test = shm.CreateData(idx);
+        test->th = i+100;
+        test->data = fmt::format("data:{}", i);
+        shm.Commit(idx);
     }
     SPDLOG_INFO("end!");
 }

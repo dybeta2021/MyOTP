@@ -61,14 +61,50 @@ int main() {
     shm.Init("test.store", 1024);
     SPDLOG_DEBUG("Init.");
 
-    TestBufferData test{};
-    const auto idx = shm.ClaimIndex();
-    SPDLOG_DEBUG("ClaimIndex:{}", idx);
+//    {
+//        TestBufferData test{};
+//        const auto idx = shm.ClaimIndex();
+//        SPDLOG_DEBUG("ClaimIndex:{}", idx);
+//
+//        const bool ret = shm.SetData(idx, &test);
+//        SPDLOG_DEBUG("SetData:{}", ret);
+//
+//        const bool commit = shm.Commit(idx);
+//        SPDLOG_DEBUG("Commit:{}", commit);
+//    }
 
-    const bool ret = shm.SetData(idx, &test);
-    SPDLOG_DEBUG("SetData:{}", ret);
+    {
+        const auto idx = shm.ClaimIndex();
+        SPDLOG_DEBUG("ClaimIndex:{}", idx);
+        auto *data = shm.CreateData(idx);
+        data->data = "abcdedf";
+        const bool commit = shm.Commit(idx);
+        SPDLOG_DEBUG("Commit:{}", commit);
+    }
 
-    const bool commit = shm.Commit(idx);
-    SPDLOG_DEBUG("Commit:{}", commit);
+    {
+        // 获取当前最新的数据
+        const int user_id = 0;
+        int64_t user_last_cursor = -1;
+        if (!shm.RegisterConsumer(user_id, user_last_cursor)) {
+            return 1;
+        }
+
+        auto ret_idx = shm.WaitFor(user_last_cursor);
+        SPDLOG_DEBUG("user:{}, user_cursor:{}，ret_idx:{}", user_id, user_last_cursor, ret_idx);
+        do {
+            auto ret = shm.GetData(user_last_cursor);
+            std::cout<<ret->data<<std::endl;
+            shm.CommitRead(user_id, user_last_cursor);
+            ret_idx = shm.WaitFor(++user_last_cursor);
+            SPDLOG_DEBUG("user:{}, user_cursor:{}，ret_idx:{}", user_id, user_last_cursor, ret_idx);
+        } while (user_last_cursor <= ret_idx);
+
+
+    }
+
+
+
+
     return 0;
 }
